@@ -21,6 +21,11 @@ public:
   void Link();
   void Use();
 
+  auto Id() const
+  {
+    return id_;
+  }
+
 private:
   std::vector<Shader> shaders_;
 

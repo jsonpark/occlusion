@@ -13,9 +13,6 @@
     <Filter Include="lib\glad">
       <UniqueIdentifier>{9b7597e6-f278-44fe-8e93-19dcd6dd7a4b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="lib\lodepng">
-      <UniqueIdentifier>{be414a6a-a33e-428c-83f4-504faf7127ce}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shader">
       <UniqueIdentifier>{592643a9-65fe-4326-9645-0da6fbff9440}</UniqueIdentifier>
     </Filter>
@@ -30,9 +27,6 @@
     <ClCompile Include="..\lib\glad\glad.c">
       <Filter>lib\glad</Filter>
     </ClCompile>
-    <ClCompile Include="..\lib\lodepng\lodepng.cpp">
-      <Filter>lib\lodepng</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\occlusion\engine.cc">
       <Filter>src</Filter>
     </ClCompile>
@@ -42,19 +36,19 @@
     <ClCompile Include="..\src\occlusion\shader.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\occlusion\vertex_array.cc">
+    <ClCompile Include="..\src\occlusion\texture.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\occlusion\texture.cc">
+    <ClCompile Include="..\src\occlusion\dataset.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\dataset_utkinect.cc">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\glad\glad.h">
       <Filter>lib\glad</Filter>
-    </ClInclude>
-    <ClInclude Include="..\lib\lodepng\lodepng.h">
-      <Filter>lib\lodepng</Filter>
     </ClInclude>
     <ClInclude Include="..\src\occlusion\engine.h">
       <Filter>src</Filter>
@@ -65,17 +59,17 @@
     <ClInclude Include="..\src\occlusion\shader.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\occlusion\buffer.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\occlusion\vertex_array.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\occlusion\texture.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\lib\stb\stb_image.h">
       <Filter>lib\stb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\dataset.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\dataset_utkinect.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -93,6 +87,9 @@
     </None>
     <None Include="..\src\shader\color.vert">
       <Filter>shader</Filter>
+    </None>
+    <None Include="..\README.md">
+      <Filter>git</Filter>
     </None>
   </ItemGroup>
 </Project>

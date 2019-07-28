@@ -2,8 +2,8 @@
 #define OCCLUSION_ENGINE_H_
 
 #include "occlusion/program.h"
-#include "occlusion/vertex_array.h"
 #include "occlusion/texture.h"
+#include "occlusion/dataset_utkinect.h"
 
 struct GLFWwindow;
 
@@ -13,19 +13,26 @@ class Engine
 {
 public:
   Engine();
+  ~Engine();
 
   void Run();
 
   void Resize(int width, int height);
+  void Keyboard(int key, int scancode, int action, int mods);
 
 private:
   void Initialize();
   void Draw();
 
   // Window
-  GLFWwindow* window_;
-  int width_;
-  int height_;
+  GLFWwindow* window_ = 0;
+  int width_ = 800;
+  int height_ = 600;
+
+  bool redraw_ = true;
+  bool animation_ = false;
+  double animation_absolute_time_ = 0.;
+  double animation_time_ = 0.;
 
   // Shaders
   void LoadShaders();
@@ -33,11 +40,12 @@ private:
   Program shader_color_;
 
   // Objects
-  Buffer<float, BufferType::Array, BufferUsage::StaticDraw> rectangle_buffer_{ 16 };
-  Buffer<unsigned int, BufferType::ElementArray, BufferUsage::StaticDraw> rectangle_index_buffer_{ 4 };
-  VertexArray rectangle_;
+  GLuint rectangle_vbo_ = 0;
+  GLuint rectangle_ibo_ = 0;
+  GLuint rectangle_vao_ = 0;
+  GLuint texture_ = 0;
 
-  Texture texture_;
+  UtKinect utkinect_;
 };
 }
 

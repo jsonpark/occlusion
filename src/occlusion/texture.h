@@ -1,7 +1,8 @@
 #ifndef OCCLUSION_TEXTURE_H_
 #define OCCLUSION_TEXTURE_H_
 
-#include "occlusion/buffer.h"
+#include <string>
+#include <vector>
 
 namespace occlusion
 {
@@ -12,22 +13,13 @@ public:
   ~Texture();
 
   void Load(const std::string& filename);
-
-  void Bind();
-  void Unbind();
+  void Load(int width, int height, std::vector<unsigned char>&& image);
 
 private:
-  void Generate();
-
-  bool generated_ = false;
-
   int width_;
   int height_;
   int components_;
   std::vector<unsigned char> image_;
-
-  // GL variables
-  GLuint id_ = 0;
 };
 }
 

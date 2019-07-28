@@ -94,6 +94,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\lib\glfw\include;..\src;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -125,6 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\lib\glfw\include;..\src;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,27 +138,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\lib\glad\glad.c" />
-    <ClCompile Include="..\lib\lodepng\lodepng.cpp" />
+    <ClCompile Include="..\src\occlusion\dataset.cc" />
+    <ClCompile Include="..\src\occlusion\dataset_utkinect.cc" />
     <ClCompile Include="..\src\occlusion\engine.cc" />
     <ClCompile Include="..\src\occlusion\main.cc" />
     <ClCompile Include="..\src\occlusion\program.cc" />
     <ClCompile Include="..\src\occlusion\shader.cc" />
     <ClCompile Include="..\src\occlusion\texture.cc" />
-    <ClCompile Include="..\src\occlusion\vertex_array.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\glad\glad.h" />
-    <ClInclude Include="..\lib\lodepng\lodepng.h" />
     <ClInclude Include="..\lib\stb\stb_image.h" />
-    <ClInclude Include="..\src\occlusion\buffer.h" />
+    <ClInclude Include="..\src\occlusion\dataset.h" />
+    <ClInclude Include="..\src\occlusion\dataset_utkinect.h" />
     <ClInclude Include="..\src\occlusion\engine.h" />
     <ClInclude Include="..\src\occlusion\program.h" />
     <ClInclude Include="..\src\occlusion\shader.h" />
     <ClInclude Include="..\src\occlusion\texture.h" />
-    <ClInclude Include="..\src\occlusion\vertex_array.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.gitignore" />
+    <None Include="..\README.md" />
     <None Include="..\src\shader\color.frag" />
     <None Include="..\src\shader\color.vert" />
     <None Include="..\src\shader\texture.frag" />
