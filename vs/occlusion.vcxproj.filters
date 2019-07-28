@@ -45,6 +45,12 @@
     <ClCompile Include="..\src\occlusion\dataset_utkinect.cc">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\occlusion\robot_model.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\robot_model_loader.cc">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\glad\glad.h">
@@ -69,6 +75,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\occlusion\dataset_utkinect.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\robot_model.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\robot_model_loader.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
