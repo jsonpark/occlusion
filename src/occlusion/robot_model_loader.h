@@ -12,9 +12,11 @@ public:
   RobotModelLoader();
   ~RobotModelLoader();
 
+  void SetPackageDirectory(const std::string& package_directory);
   void Load(const std::string& filename);
 
 private:
+  std::string package_directory_;
 };
 }
 

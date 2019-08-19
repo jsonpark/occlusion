@@ -23,7 +23,12 @@ lib
 lib\stb\stb_image.h
 ```
 
-## Original data
+* [tinyxml2](http://www.grinninglizard.com/tinyxml2/index.html) - xml loader
+```
+lib\tinyxml2\tinyxml2.h(cpp)
+```
+
+## Vision Dataset
 
 * [UTKinect](http://cvrc.ece.utexas.edu/KinectDatasets/HOJ3D.html) dataset
 ```
@@ -34,3 +39,9 @@ data\utkinect
 ```
 data\watch-n-patch
 ```
+
+## Robot Data
+
+* [Fetch robot description](https://github.com/fetchrobotics/fetch_ros/tree/indigo-devel)
+Clone it in any place outside the project directory
+Put the *fetch_ros* path to where *RobotModelLoader* class initializes
