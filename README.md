@@ -29,8 +29,8 @@ lib\tinyxml2\tinyxml2.h(cpp)
 ```
 
 * Mablab 2019a
-  * In Property Pages,
-    * Debugging, Environment, put your *PATH=C:\Program Files\MATLAB\R2019a\bin\win64;%PATH%*
+  * In Property Pages, replace *matlibroot* with the actual directory
+    * Debugging, Environment, put your *PATH=matlibroot\bin\win64;%PATH%*
     * C/C++ -> General, Additional Include Directories, put your *matlibroot\extern\include*
     * Linker -> General, Additional Library Directories, put your *matlibroot\extern\lib\win64\microsoft*
 
