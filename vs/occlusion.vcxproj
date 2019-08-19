@@ -140,6 +140,7 @@
     <ClCompile Include="..\lib\glad\glad.c" />
     <ClCompile Include="..\src\occlusion\dataset.cc" />
     <ClCompile Include="..\src\occlusion\dataset_utkinect.cc" />
+    <ClCompile Include="..\src\occlusion\dataset_wnp.cc" />
     <ClCompile Include="..\src\occlusion\engine.cc" />
     <ClCompile Include="..\src\occlusion\main.cc" />
     <ClCompile Include="..\src\occlusion\program.cc" />
@@ -153,6 +154,7 @@
     <ClInclude Include="..\lib\stb\stb_image.h" />
     <ClInclude Include="..\src\occlusion\dataset.h" />
     <ClInclude Include="..\src\occlusion\dataset_utkinect.h" />
+    <ClInclude Include="..\src\occlusion\dataset_wnp.h" />
     <ClInclude Include="..\src\occlusion\engine.h" />
     <ClInclude Include="..\src\occlusion\program.h" />
     <ClInclude Include="..\src\occlusion\robot_model.h" />

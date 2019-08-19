@@ -85,7 +85,7 @@ void Engine::Run()
 
       while (current_frame < next_frame)
       {
-        if (!utkinect_.NextFrame())
+        if (!dataset_->NextFrame())
         {
           animation_ = false;
           break;
@@ -125,19 +125,19 @@ void Engine::Keyboard(int key, int scancode, int action, int mods)
 {
   if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
   {
-    if (utkinect_.PreviousFrame())
+    if (dataset_->PreviousFrame())
       redraw_ = true;
   }
 
   else if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
   {
-    if (utkinect_.NextFrame())
+    if (dataset_->NextFrame())
       redraw_ = true;
   }
 
   else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
   {
-    if (utkinect_.NextSequence())
+    if (dataset_->NextSequence())
     {
       redraw_ = true;
       animation_ = false;
@@ -147,7 +147,7 @@ void Engine::Keyboard(int key, int scancode, int action, int mods)
 
   else if (key == GLFW_KEY_UP && action == GLFW_PRESS)
   {
-    if (utkinect_.PreviousSequence())
+    if (dataset_->PreviousSequence())
     {
       redraw_ = true;
       animation_ = false;
@@ -206,8 +206,11 @@ void Engine::Initialize()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-  // UTKinect dataset
-  utkinect_.SelectSequence(0);
+  // Dataset
+  dataset_ = &wnp_;
+  //dataset_ = &utkinect_;
+
+  dataset_->SelectSequence(0);
 
   glGenTextures(1, &texture_);
   glBindTexture(GL_TEXTURE_2D, texture_);
@@ -215,7 +218,7 @@ void Engine::Initialize()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB, utkinect_.RgbWidth(), utkinect_.RgbHeight());
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB, dataset_->RgbWidth(), dataset_->RgbHeight());
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -224,9 +227,9 @@ void Engine::Draw()
   glClear(GL_COLOR_BUFFER_BIT);
 
   // Texture
-  auto rgb_image = utkinect_.GetRgbImage();
+  auto rgb_image = dataset_->GetRgbImage();
   glBindTexture(GL_TEXTURE_2D, texture_);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, utkinect_.RgbWidth(), utkinect_.RgbHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, &rgb_image[0]);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, dataset_->RgbWidth(), dataset_->RgbHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, &rgb_image[0]);
 
   shader_color_.Use();
   glBindVertexArray(rectangle_vao_);

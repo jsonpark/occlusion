@@ -4,6 +4,7 @@
 #include "occlusion/program.h"
 #include "occlusion/texture.h"
 #include "occlusion/dataset_utkinect.h"
+#include "occlusion/dataset_wnp.h"
 
 struct GLFWwindow;
 
@@ -45,7 +46,11 @@ private:
   GLuint rectangle_vao_ = 0;
   GLuint texture_ = 0;
 
+  // Dataset
   UtKinect utkinect_;
+  Wnp wnp_;
+
+  Dataset* dataset_;
 };
 }
 
