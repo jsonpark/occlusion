@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include <stb/stb_image.h>
+#include <mat.h>
 
 #ifdef _WIN32
 namespace fs = std::filesystem;
@@ -178,12 +179,12 @@ int Wnp::RgbHeight()
 
 int Wnp::DepthWidth()
 {
-  return 640;
+  return 512;
 }
 
 int Wnp::DepthHeight()
 {
-  return 480;
+  return 424;
 }
 
 int Wnp::NumFrames()
@@ -208,7 +209,7 @@ const std::vector<unsigned char>& Wnp::GetRgbImage()
   return cached_rgb_image_;
 }
 
-const std::vector<unsigned char>& Wnp::GetDepthImage()
+const std::vector<unsigned short>& Wnp::GetDepthImage()
 {
   if (cached_depth_image_index_ == depth_image_indices_[current_frame_])
     return cached_depth_image_;
@@ -217,6 +218,16 @@ const std::vector<unsigned char>& Wnp::GetDepthImage()
 
   // TODO
   auto filename = directory + sequence_names_[current_sequence_] + directory_character + "depth" + directory_character + ZeroPrependedString(4, cached_depth_image_index_) + ".mat";
+
+  MATFile* mat;
+  mat = matOpen(filename.c_str(), "r");
+
+  mxArray* arr = matGetVariable(mat, "depth");
+  double* ptr = mxGetPr(arr);
+  cached_depth_image_ = std::vector<unsigned short>(ptr, ptr + static_cast<std::uint64_t>(DepthWidth()) * DepthHeight());
+  mxDestroyArray(arr);
+
+  matClose(mat);
 
   return cached_depth_image_;
 }

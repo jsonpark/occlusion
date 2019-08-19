@@ -93,13 +93,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\lib\glfw\include;..\src;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\lib\glfw\include;C:\Program Files\MATLAB\R2019a\extern\include;..\src;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>..\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\MATLAB\R2019a\extern\lib\win64\microsoft;..\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;libmat.lib;libmx.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,19 +125,20 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\lib\glfw\include;..\src;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\lib\glfw\include;C:\Program Files\MATLAB\R2019a\extern\include;..\src;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\MATLAB\R2019a\extern\lib\win64\microsoft;..\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;libmat.lib;libmx.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\lib\glad\glad.c" />
+    <ClCompile Include="..\lib\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="..\src\occlusion\dataset.cc" />
     <ClCompile Include="..\src\occlusion\dataset_utkinect.cc" />
     <ClCompile Include="..\src\occlusion\dataset_wnp.cc" />
@@ -152,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="..\lib\glad\glad.h" />
     <ClInclude Include="..\lib\stb\stb_image.h" />
+    <ClInclude Include="..\lib\tinyxml2\tinyxml2.h" />
     <ClInclude Include="..\src\occlusion\dataset.h" />
     <ClInclude Include="..\src\occlusion\dataset_utkinect.h" />
     <ClInclude Include="..\src\occlusion\dataset_wnp.h" />
@@ -163,6 +165,7 @@
     <ClInclude Include="..\src\occlusion\texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\fetch_ros\fetch_description\robots\fetch.urdf" />
     <None Include="..\.gitignore" />
     <None Include="..\README.md" />
     <None Include="..\src\shader\color.frag" />

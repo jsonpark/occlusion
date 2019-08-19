@@ -13,7 +13,7 @@ Locate library at
 ```
 C:\lib\glfw
 ```
-Build glfw3.lib and locate at
+  * Build glfw3.lib and locate at
 ```
 lib
 ```
@@ -27,6 +27,13 @@ lib\stb\stb_image.h
 ```
 lib\tinyxml2\tinyxml2.h(cpp)
 ```
+
+* Mablab 2019a
+  * In Property Pages,
+    * Debugging, Environment, put your *PATH=C:\Program Files\MATLAB\R2019a\bin\win64;%PATH%*
+    * C/C++ -> General, Additional Include Directories, put your *matlibroot\extern\include*
+    * Linker -> General, Additional Library Directories, put your *matlibroot\extern\lib\win64\microsoft*
+
 
 ## Vision Dataset
 
@@ -43,7 +50,5 @@ data\watch-n-patch
 ## Robot Data
 
 * [Fetch robot description](https://github.com/fetchrobotics/fetch_ros/tree/indigo-devel)
-
-Clone it in any place outside the project directory
-
-Put the *fetch_ros* path to where *RobotModelLoader* class initializes
+  * Clone it in any place outside the project directory
+  * Put the *fetch_ros* path to where *RobotModelLoader* class initializes

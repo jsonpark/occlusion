@@ -25,7 +25,7 @@ public:
 
   int NumFrames() override;
   const std::vector<unsigned char>& GetRgbImage() override;
-  const std::vector<unsigned char>& GetDepthImage() override;
+  const std::vector<unsigned short>& GetDepthImage() override;
 
   bool PreviousSequence() override;
   bool NextSequence() override;
@@ -44,7 +44,7 @@ private:
   int cached_rgb_image_index_ = -1;
   int cached_depth_image_index_ = -1;
   std::vector<unsigned char> cached_rgb_image_;
-  std::vector<unsigned char> cached_depth_image_;
+  std::vector<unsigned short> cached_depth_image_;
 };
 }
 

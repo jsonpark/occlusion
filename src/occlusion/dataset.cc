@@ -52,7 +52,7 @@ const std::vector<unsigned char>& Dataset::GetRgbImage()
   return rgb_image_;
 }
 
-const std::vector<unsigned char>& Dataset::GetDepthImage()
+const std::vector<unsigned short>& Dataset::GetDepthImage()
 {
   depth_image_.resize(DepthWidth() * DepthHeight(), 0);
 

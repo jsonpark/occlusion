@@ -231,6 +231,18 @@ void Engine::Draw()
   glBindTexture(GL_TEXTURE_2D, texture_);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, dataset_->RgbWidth(), dataset_->RgbHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, &rgb_image[0]);
 
+  // Depth image
+  auto depth_image = dataset_->GetDepthImage();
+
+  for (int i = 0; i < 10; i++)
+  {
+    for (int j = 0; j < 10; j++)
+    {
+      std::cout << depth_image[i + j * dataset_->DepthHeight()] << " ";
+    }
+    std::cout << std::endl;
+  }
+
   shader_color_.Use();
   glBindVertexArray(rectangle_vao_);
   glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, 0);

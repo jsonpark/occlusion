@@ -19,6 +19,12 @@
     <Filter Include="lib\stb">
       <UniqueIdentifier>{4b2ad983-3b60-4237-964f-9cc0b2c0d6d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="robot">
+      <UniqueIdentifier>{08ffd574-f130-4dc5-9517-7312a7ab5703}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\tinyxml2">
+      <UniqueIdentifier>{c6ef714a-fcb0-4ae7-a9fe-0b0ef73330c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\occlusion\main.cc">
@@ -53,6 +59,9 @@
     </ClCompile>
     <ClCompile Include="..\src\occlusion\dataset_wnp.cc">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\tinyxml2\tinyxml2.cpp">
+      <Filter>lib\tinyxml2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +98,9 @@
     <ClInclude Include="..\src\occlusion\dataset_wnp.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\lib\tinyxml2\tinyxml2.h">
+      <Filter>lib\tinyxml2</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.gitignore">
@@ -108,6 +120,9 @@
     </None>
     <None Include="..\README.md">
       <Filter>git</Filter>
+    </None>
+    <None Include="..\..\fetch_ros\fetch_description\robots\fetch.urdf">
+      <Filter>robot</Filter>
     </None>
   </ItemGroup>
 </Project>
