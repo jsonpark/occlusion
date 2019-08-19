@@ -13,7 +13,7 @@ Locate library at
 ```
 C:\lib\glfw
 ```
-  * Build glfw3.lib and locate at
+Build glfw3.lib and locate at
 ```
 lib
 ```
