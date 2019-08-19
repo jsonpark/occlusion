@@ -43,5 +43,7 @@ data\watch-n-patch
 ## Robot Data
 
 * [Fetch robot description](https://github.com/fetchrobotics/fetch_ros/tree/indigo-devel)
+
 Clone it in any place outside the project directory
+
 Put the *fetch_ros* path to where *RobotModelLoader* class initializes
