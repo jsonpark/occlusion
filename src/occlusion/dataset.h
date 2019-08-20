@@ -16,6 +16,7 @@ public:
   virtual void SelectSequence(int idx);
   virtual void SelectSequence(const std::string& name);
 
+  virtual int FrameRate();
   virtual int RgbWidth();
   virtual int RgbHeight();
   virtual int DepthWidth();

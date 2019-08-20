@@ -19,6 +19,11 @@ void Dataset::SelectSequence(const std::string& name)
 {
 }
 
+int Dataset::FrameRate()
+{
+  return 60;
+}
+
 int Dataset::RgbWidth()
 {
   // Default Kinect v2

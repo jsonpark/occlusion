@@ -169,6 +169,11 @@ void UtKinect::SelectSequence(const std::string& name)
   std::cout << "UtKinect: could not find sequence name \"" << name << "\"." << std::endl;
 }
 
+int UtKinect::FrameRate()
+{
+  return 60;
+}
+
 int UtKinect::RgbWidth()
 {
   return 640;

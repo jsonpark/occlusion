@@ -18,6 +18,7 @@ public:
   void SelectSequence(int idx) override;
   void SelectSequence(const std::string& name) override;
 
+  int FrameRate() override;
   int RgbWidth() override;
   int RgbHeight() override;
   int DepthWidth() override;

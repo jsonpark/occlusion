@@ -73,15 +73,17 @@ void Engine::Run()
   // Rendering loop
   Initialize();
 
+  const double fps = dataset_->FrameRate();
+
   while (!glfwWindowShouldClose(window_))
   {
     if (animation_)
     {
       double current_time = glfwGetTime();
-      auto current_frame = static_cast<int>(animation_time_ * 60.);
+      auto current_frame = static_cast<int>(animation_time_ * fps);
       animation_time_ += current_time - animation_absolute_time_;
       animation_absolute_time_ = current_time;
-      auto next_frame = static_cast<int>(animation_time_ * 60.);
+      auto next_frame = static_cast<int>(animation_time_ * fps);
 
       while (current_frame < next_frame)
       {
@@ -234,14 +236,7 @@ void Engine::Draw()
   // Depth image
   auto depth_image = dataset_->GetDepthImage();
 
-  for (int i = 0; i < 10; i++)
-  {
-    for (int j = 0; j < 10; j++)
-    {
-      std::cout << depth_image[i + j * dataset_->DepthHeight()] << " ";
-    }
-    std::cout << std::endl;
-  }
+  // TODO
 
   shader_color_.Use();
   glBindVertexArray(rectangle_vao_);

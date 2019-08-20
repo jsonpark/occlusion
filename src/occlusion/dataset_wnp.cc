@@ -167,6 +167,11 @@ void Wnp::SelectSequence(const std::string& name)
   std::cout << "Wnp: could not find sequence name \"" << name << "\"." << std::endl;
 }
 
+int Wnp::FrameRate()
+{
+  return 6;
+}
+
 int Wnp::RgbWidth()
 {
   return 1920;
