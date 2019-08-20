@@ -24,16 +24,19 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 }
 
 Engine::Engine()
-  : width_(800), height_(600)
+  : width_(1366), height_(768)
 {
 }
 
 Engine::~Engine()
 {
-  glDeleteBuffers(1, &rectangle_vbo_);
+  glDeleteBuffers(1, &color_rectangle_vbo_);
+  glDeleteVertexArrays(1, &color_rectangle_vao_);
+  glDeleteBuffers(1, &depth_rectangle_vbo_);
+  glDeleteVertexArrays(1, &depth_rectangle_vao_);
   glDeleteBuffers(1, &rectangle_ibo_);
-  glDeleteVertexArrays(1, &rectangle_vao_);
-  glDeleteTextures(1, &texture_);
+  glDeleteTextures(1, &color_texture_);
+  glDeleteTextures(1, &depth_texture_);
 }
 
 void Engine::Run()
@@ -44,7 +47,7 @@ void Engine::Run()
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  window_ = glfwCreateWindow(width_, height_, "LearnOpenGL", NULL, NULL);
+  window_ = glfwCreateWindow(width_, height_, "Dataset", NULL, NULL);
   if (window_ == NULL)
   {
     std::cerr << "Failed to create GLFW window" << std::endl;
@@ -177,24 +180,75 @@ void Engine::Initialize()
 
   LoadShaders();
 
+  // Dataset
+  dataset_ = &wnp_;
+
+  dataset_->SelectSequence(0);
+
+  glGenTextures(1, &color_texture_);
+  glBindTexture(GL_TEXTURE_2D, color_texture_);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB, dataset_->RgbWidth(), dataset_->RgbHeight());
+
+  glGenTextures(1, &depth_texture_);
+  glBindTexture(GL_TEXTURE_2D, depth_texture_);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RED, dataset_->DepthHeight(), dataset_->DepthWidth());
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
   // Rectangles
-  float rectangle_buffer[] = {
-    -0.5f, -0.5f, 0.f, 0.f,
-    0.5f, -0.5f, 1.f, 0.f,
-    0.5f, 0.5f, 1.f, 1.f,
-    -0.5f, 0.5f, 0.f, 1.f,
+  double aspect_rgb = static_cast<double>(dataset_->RgbWidth()) / dataset_->RgbHeight();
+  double aspect_depth = static_cast<double>(dataset_->DepthWidth()) / dataset_->DepthHeight();
+  double aspect = aspect_rgb + aspect_depth;
+  double height = 2. / aspect;
+
+  float color_rectangle_buffer[] = {
+    -aspect_rgb / 2.f, 0.f, 0.f, 0.f,
+    aspect_rgb / 2.f, 0.f, 1.f, 0.f,
+    aspect_rgb / 2.f, 1.f, 1.f, 1.f,
+    -aspect_rgb / 2.f, 1.f, 0.f, 1.f,
   };
+
+  float depth_rectangle_buffer[] = {
+    -aspect_depth / 2.f, -1.f, 0.f, 0.f,
+    aspect_depth / 2.f, -1.f, 1.f, 0.f,
+    aspect_depth / 2.f, 0.f, 1.f, 1.f,
+    -aspect_depth / 2.f, 0.f, 0.f, 1.f,
+  };
+
+  /*
+  float color_rectangle_buffer[] = {
+    -1.f, -height / 2.f, 0.f, 0.f,
+    -1.f + aspect_rgb / aspect * 2.f, -height / 2.f, 1.f, 0.f,
+    -1.f + aspect_rgb / aspect * 2.f, height / 2.f, 1.f, 1.f,
+    -1.f, height / 2.f, 0.f, 1.f,
+  };
+
+  float depth_rectangle_buffer[] = {
+    1.f - aspect_depth / aspect * 2.f, -height / 2.f, 0.f, 0.f,
+    1.f, -height / 2.f, 1.f, 0.f,
+    1.f, height / 2.f, 1.f, 1.f,
+    1.f - aspect_depth / aspect * 2.f, height / 2.f, 0.f, 1.f,
+  };
+  */
 
   int rectangle_index_buffer[] = {
     0, 1, 2, 3
   };
 
-  glGenVertexArrays(1, &rectangle_vao_);
-  glBindVertexArray(rectangle_vao_);
+  glGenVertexArrays(1, &color_rectangle_vao_);
+  glBindVertexArray(color_rectangle_vao_);
 
-  glGenBuffers(1, &rectangle_vbo_);
-  glBindBuffer(GL_ARRAY_BUFFER, rectangle_vbo_);
-  glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), rectangle_buffer, GL_STATIC_DRAW);
+  glGenBuffers(1, &color_rectangle_vbo_);
+  glBindBuffer(GL_ARRAY_BUFFER, color_rectangle_vbo_);
+  glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), color_rectangle_buffer, GL_STATIC_DRAW);
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0));
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
@@ -204,24 +258,22 @@ void Engine::Initialize()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectangle_ibo_);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(int), rectangle_index_buffer, GL_STATIC_DRAW);
 
+  glGenVertexArrays(1, &depth_rectangle_vao_);
+  glBindVertexArray(depth_rectangle_vao_);
+
+  glGenBuffers(1, &depth_rectangle_vbo_);
+  glBindBuffer(GL_ARRAY_BUFFER, depth_rectangle_vbo_);
+  glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), depth_rectangle_buffer, GL_STATIC_DRAW);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0));
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectangle_ibo_);
+
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-  // Dataset
-  dataset_ = &wnp_;
-  //dataset_ = &utkinect_;
-
-  dataset_->SelectSequence(0);
-
-  glGenTextures(1, &texture_);
-  glBindTexture(GL_TEXTURE_2D, texture_);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB, dataset_->RgbWidth(), dataset_->RgbHeight());
-  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Engine::Draw()
@@ -230,16 +282,22 @@ void Engine::Draw()
 
   // Texture
   auto rgb_image = dataset_->GetRgbImage();
-  glBindTexture(GL_TEXTURE_2D, texture_);
+  glBindTexture(GL_TEXTURE_2D, color_texture_);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, dataset_->RgbWidth(), dataset_->RgbHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, &rgb_image[0]);
+
+  shader_color_.Use();
+  glBindVertexArray(color_rectangle_vao_);
+  glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, 0);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindVertexArray(0);
 
   // Depth image
   auto depth_image = dataset_->GetDepthImage();
+  glBindTexture(GL_TEXTURE_2D, depth_texture_);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, dataset_->DepthHeight(), dataset_->DepthWidth(), 0, GL_RED, GL_UNSIGNED_SHORT, &depth_image[0]);
 
-  // TODO
-
-  shader_color_.Use();
-  glBindVertexArray(rectangle_vao_);
+  shader_depth_.Use();
+  glBindVertexArray(depth_rectangle_vao_);
   glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, 0);
   glBindTexture(GL_TEXTURE_2D, 0);
   glBindVertexArray(0);
@@ -248,5 +306,6 @@ void Engine::Draw()
 void Engine::LoadShaders()
 {
   shader_color_ = Program("..\\src\\shader\\texture");
+  shader_depth_ = Program("..\\src\\shader\\depth");
 }
 }

@@ -39,12 +39,16 @@ private:
   void LoadShaders();
 
   Program shader_color_;
+  Program shader_depth_;
 
   // Objects
-  GLuint rectangle_vbo_ = 0;
+  GLuint color_rectangle_vbo_ = 0;
+  GLuint color_rectangle_vao_ = 0;
+  GLuint depth_rectangle_vbo_ = 0;
+  GLuint depth_rectangle_vao_ = 0;
   GLuint rectangle_ibo_ = 0;
-  GLuint rectangle_vao_ = 0;
-  GLuint texture_ = 0;
+  GLuint color_texture_ = 0;
+  GLuint depth_texture_ = 0;
 
   // Dataset
   UtKinect utkinect_;

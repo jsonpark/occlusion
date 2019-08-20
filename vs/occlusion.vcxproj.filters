@@ -124,5 +124,11 @@
     <None Include="..\..\fetch_ros\fetch_description\robots\fetch.urdf">
       <Filter>robot</Filter>
     </None>
+    <None Include="..\src\shader\depth.frag">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\src\shader\depth.vert">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
