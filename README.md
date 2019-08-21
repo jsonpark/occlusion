@@ -10,7 +10,7 @@ lib\glad\glad.c(h), lib\KHR\khrplatform.h
 
 * [glfw](https://www.glfw.org/) - OpenGL window management
   * In Property Pages
-    * C/C++ -> General, Additional Include Directories, put your *eigenroot*
+    * C/C++ -> General, Additional Include Directories, put your *glfwroot*
   * Build glfw3.lib and locate at
 ```
 lib
