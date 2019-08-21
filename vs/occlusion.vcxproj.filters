@@ -63,6 +63,9 @@
     <ClCompile Include="..\lib\tinyxml2\tinyxml2.cpp">
       <Filter>lib\tinyxml2</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\occlusion\kinect_v2.cc">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\glad\glad.h">
@@ -100,6 +103,12 @@
     </ClInclude>
     <ClInclude Include="..\lib\tinyxml2\tinyxml2.h">
       <Filter>lib\tinyxml2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\kinect_v2.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\types.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

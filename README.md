@@ -9,11 +9,9 @@ lib\glad\glad.c(h), lib\KHR\khrplatform.h
 ```
 
 * [glfw](https://www.glfw.org/) - OpenGL window management
-Locate library at
-```
-C:\lib\glfw
-```
-Build glfw3.lib and locate at
+  * In Property Pages
+    * C/C++ -> General, Additional Include Directories, put your *eigenroot*
+  * Build glfw3.lib and locate at
 ```
 lib
 ```
@@ -28,12 +26,15 @@ lib\stb\stb_image.h
 lib\tinyxml2\tinyxml2.h(cpp)
 ```
 
+* [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) - Math library
+  * In Property Pages
+    * C/C++ -> General, Additional Include Directories, put your *eigenroot*
+
 * Mablab 2019a
   * In Property Pages, replace *matlibroot* with the actual directory
     * Debugging, Environment, put your *PATH=matlibroot\bin\win64;%PATH%*
     * C/C++ -> General, Additional Include Directories, put your *matlibroot\extern\include*
     * Linker -> General, Additional Library Directories, put your *matlibroot\extern\lib\win64\microsoft*
-
 
 ## Vision Dataset
 
