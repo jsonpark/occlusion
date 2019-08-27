@@ -50,18 +50,14 @@ int Dataset::NumFrames()
   return 10;
 }
 
-const std::vector<unsigned char>& Dataset::GetRgbImage()
+std::vector<unsigned char> Dataset::GetRgbImage()
 {
-  rgb_image_.resize(RgbWidth() * RgbHeight() * 3, 0);
-
-  return rgb_image_;
+  return std::vector<unsigned char>(RgbWidth() * RgbHeight() * 3, 0);
 }
 
-const std::vector<unsigned short>& Dataset::GetDepthImage()
+std::vector<unsigned short> Dataset::GetDepthImage()
 {
-  depth_image_.resize(DepthWidth() * DepthHeight(), 0);
-
-  return depth_image_;
+  return std::vector<unsigned short>(DepthWidth() * DepthHeight(), 0);
 }
 
 bool Dataset::PreviousSequence()

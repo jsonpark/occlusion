@@ -139,5 +139,11 @@
     <None Include="..\src\shader\depth.vert">
       <Filter>shader</Filter>
     </None>
+    <None Include="..\src\shader\pointcloud_gray.frag">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\src\shader\pointcloud_gray.vert">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -30,13 +30,16 @@ Engine::Engine()
 
 Engine::~Engine()
 {
-  glDeleteBuffers(1, &color_rectangle_vbo_);
   glDeleteVertexArrays(1, &color_rectangle_vao_);
-  glDeleteBuffers(1, &depth_rectangle_vbo_);
+  glDeleteBuffers(1, &color_rectangle_vbo_);
   glDeleteVertexArrays(1, &depth_rectangle_vao_);
+  glDeleteBuffers(1, &depth_rectangle_vbo_);
   glDeleteBuffers(1, &rectangle_ibo_);
   glDeleteTextures(1, &color_texture_);
   glDeleteTextures(1, &depth_texture_);
+  glDeleteVertexArrays(1, &point_cloud_vao_);
+  glDeleteBuffers(1, &point_cloud_vbo_);
+  glDeleteBuffers(1, &point_cloud_color_vbo_);
 }
 
 void Engine::Run()
@@ -223,22 +226,6 @@ void Engine::Initialize()
     -aspect_depth / 2.f, 0.f, 0.f, 1.f,
   };
 
-  /*
-  float color_rectangle_buffer[] = {
-    -1.f, -height / 2.f, 0.f, 0.f,
-    -1.f + aspect_rgb / aspect * 2.f, -height / 2.f, 1.f, 0.f,
-    -1.f + aspect_rgb / aspect * 2.f, height / 2.f, 1.f, 1.f,
-    -1.f, height / 2.f, 0.f, 1.f,
-  };
-
-  float depth_rectangle_buffer[] = {
-    1.f - aspect_depth / aspect * 2.f, -height / 2.f, 0.f, 0.f,
-    1.f, -height / 2.f, 1.f, 0.f,
-    1.f, height / 2.f, 1.f, 1.f,
-    1.f - aspect_depth / aspect * 2.f, height / 2.f, 0.f, 1.f,
-  };
-  */
-
   int rectangle_index_buffer[] = {
     0, 1, 2, 3
   };
@@ -274,16 +261,32 @@ void Engine::Initialize()
   glBindVertexArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  // Point cloud vertex array
+  glGenVertexArrays(1, &point_cloud_vao_);
+  glBindVertexArray(point_cloud_vao_);
+
+  glGenBuffers(1, &point_cloud_vbo_);
+  glBindBuffer(GL_ARRAY_BUFFER, point_cloud_vbo_);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * dataset_->DepthWidth() * dataset_->DepthHeight() * 3, (void*)0, GL_DYNAMIC_DRAW);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  glEnableVertexAttribArray(0);
+
+  glGenBuffers(1, &point_cloud_color_vbo_);
+  glBindBuffer(GL_ARRAY_BUFFER, point_cloud_color_vbo_);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * dataset_->DepthWidth() * dataset_->DepthHeight() * 3, (void*)0, GL_DYNAMIC_DRAW);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  glEnableVertexAttribArray(1);
+
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Engine::Draw()
+void Engine::DrawColorDepthImages(const std::vector<unsigned char>& color, const std::vector<unsigned short>& depth)
 {
-  glClear(GL_COLOR_BUFFER_BIT);
-
   // Texture
-  auto rgb_image = dataset_->GetRgbImage();
   glBindTexture(GL_TEXTURE_2D, color_texture_);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, dataset_->RgbWidth(), dataset_->RgbHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, &rgb_image[0]);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, dataset_->RgbWidth(), dataset_->RgbHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, &color[0]);
 
   shader_color_.Use();
   glBindVertexArray(color_rectangle_vao_);
@@ -292,9 +295,8 @@ void Engine::Draw()
   glBindVertexArray(0);
 
   // Depth image
-  auto depth_image = dataset_->GetDepthImage();
   glBindTexture(GL_TEXTURE_2D, depth_texture_);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, dataset_->DepthHeight(), dataset_->DepthWidth(), 0, GL_RED, GL_UNSIGNED_SHORT, &depth_image[0]);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, dataset_->DepthHeight(), dataset_->DepthWidth(), 0, GL_RED, GL_UNSIGNED_SHORT, &depth[0]);
 
   shader_depth_.Use();
   glBindVertexArray(depth_rectangle_vao_);
@@ -303,9 +305,48 @@ void Engine::Draw()
   glBindVertexArray(0);
 }
 
+void Engine::DrawPointCloud(const std::vector<float>& point_cloud, const std::vector<float>& point_cloud_color)
+{
+  shader_point_cloud_.Use();
+
+  Matrix4f id = Matrix4f::Identity();
+  shader_point_cloud_.UniformMatrix4f("projection", id);
+  shader_point_cloud_.UniformMatrix4f("view", id);
+  shader_point_cloud_.UniformMatrix4f("model", id);
+
+  glBindBuffer(GL_ARRAY_BUFFER, point_cloud_vbo_);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * point_cloud.size(), point_cloud.data());
+  glBindBuffer(GL_ARRAY_BUFFER, point_cloud_color_vbo_);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * point_cloud_color.size(), point_cloud_color.data());
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  glBindVertexArray(point_cloud_vao_);
+  glDrawArrays(GL_POINTS, 0, point_cloud.size() / 3);
+  glBindVertexArray(0);
+}
+
+void Engine::Draw()
+{
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  auto rgb_image = dataset_->GetRgbImage();
+  auto depth_image = dataset_->GetDepthImage();
+
+  // DrawColorDepthImages(rgb_image, depth_image);
+
+  // Point cloud
+  kinect_.FeedFrame(std::move(rgb_image), std::move(depth_image));
+  kinect_.GeneratePointCloud();
+  const auto& point_cloud = kinect_.GetPointCloud();
+  const auto& point_cloud_color = kinect_.GetPointCloudColor();
+
+  DrawPointCloud(point_cloud, point_cloud_color);
+}
+
 void Engine::LoadShaders()
 {
   shader_color_ = Program("..\\src\\shader\\texture");
   shader_depth_ = Program("..\\src\\shader\\depth");
+  shader_point_cloud_ = Program("..\\src\\shader\\pointcloud_gray");
 }
 }

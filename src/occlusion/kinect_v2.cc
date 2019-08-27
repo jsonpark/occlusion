@@ -1,5 +1,7 @@
 #include "occlusion/kinect_v2.h"
 
+#include <iostream>
+
 namespace occlusion
 {
 const KinectV2::CameraParameters KinectV2::color_params_ =
@@ -34,7 +36,72 @@ const KinectV2::CameraParameters KinectV2::depth_params_ =
   .k3 = 0.00000,
 };
 
-KinectV2::KinectV2() = default;
+KinectV2::KinectV2()
+{
+  rotation_ << 0.999971346110444, -0.00756469826720314, 0.000286876615262462,
+    0.00756522677983534, 0.999969600410407, -0.00188827932806725,
+    -0.000272583630970059, 0.00189039550817223, 0.999998176049830;
+
+  translation_ << -56.7170118956704, -0.728510987903765, -3.87867708001932;
+}
 
 KinectV2::~KinectV2() = default;
+
+void KinectV2::FeedFrame(std::vector<unsigned char>&& color, std::vector<unsigned short>&& depth)
+{
+  color_ = std::move(color);
+  depth_ = std::move(depth);
+}
+
+void KinectV2::GeneratePointCloud()
+{
+  point_cloud_.resize(depth_width_ * depth_height_ * 3);
+
+  // Depth plane to depth world
+  for (int x = 0; x < depth_width_; x++)
+  {
+    for (int y = 0; y < depth_height_; y++)
+    {
+      int index = y + x * depth_height_;
+      point_cloud_[index * 3 + 0] = (x - depth_params_.cx) * depth_[index] / depth_params_.fx;
+      point_cloud_[index * 3 + 1] = (y - depth_params_.cy) * depth_[index] / depth_params_.fy;
+      point_cloud_[index * 3 + 2] = depth_[index];
+    }
+  }
+
+  // Depth world to color world to color plane
+  point_cloud_color_.resize(depth_width_ * depth_height_ * 3);
+  std::fill(point_cloud_color_.begin(), point_cloud_color_.end(), 0.f);
+  for (int i = 0; i < point_cloud_.size() / 3; i++)
+  {
+    Vector3f color_plane = (rotation_ * Vector3d(point_cloud_[i * 3 + 0], point_cloud_[i * 3 + 1], point_cloud_[i * 3 + 2]) + translation_).cast<float>();
+    color_plane(0) = color_plane(0) * color_params_.fx / color_plane(2) + color_params_.cx;
+    color_plane(1) = color_plane(1) * color_params_.fy / color_plane(2) + color_params_.cy;
+
+    Vector3f rounded(std::roundf(color_plane(0)), std::roundf(color_plane(1)), std::roundf(color_plane(2)));
+    if (0 < rounded(0) && rounded(0) <= color_width_ &&
+      0 < rounded(1) && rounded(1) <= color_height_ &&
+      rounded(2) != 0.f)
+    {
+      int depth_index = i;
+      int color_index = (rounded(0) - 1) + (color_height_ - (rounded(1) - 1) - 1) * color_width_;
+
+      point_cloud_color_[depth_index * 3 + 0] = color_[color_index * 3 + 0] / 255.f;
+      point_cloud_color_[depth_index * 3 + 1] = color_[color_index * 3 + 1] / 255.f;
+      point_cloud_color_[depth_index * 3 + 2] = color_[color_index * 3 + 2] / 255.f;
+
+      //std::cout << point_cloud_color_[depth_index * 3 + 0] << " " << point_cloud_color_[depth_index * 3 + 1] << " " << point_cloud_color_[depth_index * 3 + 2] << std::endl;
+    }
+  }
+}
+
+const std::vector<float>& KinectV2::GetPointCloud()
+{
+  return point_cloud_;
+}
+
+const std::vector<float>& KinectV2::GetPointCloudColor()
+{
+  return point_cloud_color_;
+}
 }

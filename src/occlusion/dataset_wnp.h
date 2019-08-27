@@ -25,8 +25,8 @@ public:
   int DepthHeight() override;
 
   int NumFrames() override;
-  const std::vector<unsigned char>& GetRgbImage() override;
-  const std::vector<unsigned short>& GetDepthImage() override;
+  std::vector<unsigned char> GetRgbImage() override;
+  std::vector<unsigned short> GetDepthImage() override;
 
   bool PreviousSequence() override;
   bool NextSequence() override;

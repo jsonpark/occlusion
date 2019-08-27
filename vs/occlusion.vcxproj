@@ -175,6 +175,8 @@
     <None Include="..\src\shader\color.vert" />
     <None Include="..\src\shader\depth.frag" />
     <None Include="..\src\shader\depth.vert" />
+    <None Include="..\src\shader\pointcloud_gray.frag" />
+    <None Include="..\src\shader\pointcloud_gray.vert" />
     <None Include="..\src\shader\texture.frag" />
     <None Include="..\src\shader\texture.vert" />
   </ItemGroup>

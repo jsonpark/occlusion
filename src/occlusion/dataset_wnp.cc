@@ -197,7 +197,7 @@ int Wnp::NumFrames()
   return num_frames_;
 }
 
-const std::vector<unsigned char>& Wnp::GetRgbImage()
+std::vector<unsigned char> Wnp::GetRgbImage()
 {
   if (cached_rgb_image_index_ == rgb_image_indices_[current_frame_])
     return cached_rgb_image_;
@@ -214,7 +214,7 @@ const std::vector<unsigned char>& Wnp::GetRgbImage()
   return cached_rgb_image_;
 }
 
-const std::vector<unsigned short>& Wnp::GetDepthImage()
+std::vector<unsigned short> Wnp::GetDepthImage()
 {
   if (cached_depth_image_index_ == depth_image_indices_[current_frame_])
     return cached_depth_image_;

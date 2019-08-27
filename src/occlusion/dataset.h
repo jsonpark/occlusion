@@ -23,8 +23,8 @@ public:
   virtual int DepthHeight();
 
   virtual int NumFrames();
-  virtual const std::vector<unsigned char>& GetRgbImage();
-  virtual const std::vector<unsigned short>& GetDepthImage();
+  virtual std::vector<unsigned char> GetRgbImage();
+  virtual std::vector<unsigned short> GetDepthImage();
 
   virtual bool PreviousSequence();
   virtual bool NextSequence();
@@ -32,8 +32,6 @@ public:
   virtual bool NextFrame();
 
 private:
-  std::vector<unsigned char> rgb_image_;
-  std::vector<unsigned short> depth_image_;
 };
 }
 

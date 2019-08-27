@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "occlusion/shader.h"
+#include "occlusion/types.h"
 
 #include <glad/glad.h>
 
@@ -25,6 +26,9 @@ public:
   {
     return id_;
   }
+
+  void UniformMatrix3f(const std::string& name, const Matrix3f& m);
+  void UniformMatrix4f(const std::string& name, const Matrix4f& m);
 
 private:
   std::vector<Shader> shaders_;

@@ -5,6 +5,7 @@
 #include "occlusion/texture.h"
 #include "occlusion/dataset_utkinect.h"
 #include "occlusion/dataset_wnp.h"
+#include "occlusion/kinect_v2.h"
 
 struct GLFWwindow;
 
@@ -25,6 +26,9 @@ private:
   void Initialize();
   void Draw();
 
+  void DrawColorDepthImages(const std::vector<unsigned char>& color, const std::vector<unsigned short>& depth);
+  void DrawPointCloud(const std::vector<float>& point_cloud, const std::vector<float>& point_cloud_color);
+
   // Window
   GLFWwindow* window_ = 0;
   int width_ = 800;
@@ -40,21 +44,29 @@ private:
 
   Program shader_color_;
   Program shader_depth_;
+  Program shader_point_cloud_;
 
   // Objects
-  GLuint color_rectangle_vbo_ = 0;
   GLuint color_rectangle_vao_ = 0;
-  GLuint depth_rectangle_vbo_ = 0;
+  GLuint color_rectangle_vbo_ = 0;
   GLuint depth_rectangle_vao_ = 0;
+  GLuint depth_rectangle_vbo_ = 0;
   GLuint rectangle_ibo_ = 0;
   GLuint color_texture_ = 0;
   GLuint depth_texture_ = 0;
+
+  GLuint point_cloud_vao_ = 0;
+  GLuint point_cloud_vbo_ = 0;
+  GLuint point_cloud_color_vbo_ = 0;
 
   // Dataset
   UtKinect utkinect_;
   Wnp wnp_;
 
   Dataset* dataset_;
+
+  // Kinect V2
+  KinectV2 kinect_;
 };
 }
 

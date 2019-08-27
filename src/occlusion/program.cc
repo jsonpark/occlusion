@@ -108,4 +108,14 @@ void Program::Link()
     glDeleteShader(shader_id);
   }
 }
+
+void Program::UniformMatrix3f(const std::string& name, const Matrix3f& m)
+{
+  glUniformMatrix3fv(glGetUniformLocation(id_, name.c_str()), 1, GL_FALSE, m.data());
+}
+
+void Program::UniformMatrix4f(const std::string& name, const Matrix4f& m)
+{
+  glUniformMatrix4fv(glGetUniformLocation(id_, name.c_str()), 1, GL_FALSE, m.data());
+}
 }
