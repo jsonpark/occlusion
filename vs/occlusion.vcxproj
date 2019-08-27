@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClCompile Include="..\lib\glad\glad.c" />
     <ClCompile Include="..\lib\tinyxml2\tinyxml2.cpp" />
+    <ClCompile Include="..\src\occlusion\camera.cc" />
     <ClCompile Include="..\src\occlusion\dataset.cc" />
     <ClCompile Include="..\src\occlusion\dataset_utkinect.cc" />
     <ClCompile Include="..\src\occlusion\dataset_wnp.cc" />
@@ -155,6 +156,7 @@
     <ClInclude Include="..\lib\glad\glad.h" />
     <ClInclude Include="..\lib\stb\stb_image.h" />
     <ClInclude Include="..\lib\tinyxml2\tinyxml2.h" />
+    <ClInclude Include="..\src\occlusion\camera.h" />
     <ClInclude Include="..\src\occlusion\dataset.h" />
     <ClInclude Include="..\src\occlusion\dataset_utkinect.h" />
     <ClInclude Include="..\src\occlusion\dataset_wnp.h" />

@@ -21,6 +21,22 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
   Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
   engine->Keyboard(key, scancode, action, mods);
 }
+
+void CursorPosCallback(GLFWwindow* window, double xpos, double ypos)
+{
+  Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
+  engine->CursorPos(xpos, ypos);
+}
+
+void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+  Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
+
+  double xpos, ypos;
+  glfwGetCursorPos(window, &xpos, &ypos);
+
+  engine->MouseButton(button, action, mods, xpos, ypos);
+}
 }
 
 Engine::Engine()
@@ -73,6 +89,8 @@ void Engine::Run()
   glfwSetWindowUserPointer(window_, this);
   glfwSetFramebufferSizeCallback(window_, FramebufferSizeCallback);
   glfwSetKeyCallback(window_, KeyCallback);
+  glfwSetCursorPosCallback(window_, CursorPosCallback);
+  glfwSetMouseButtonCallback(window_, MouseButtonCallback);
 
   Resize(width_, height_);
 
@@ -176,12 +194,67 @@ void Engine::Keyboard(int key, int scancode, int action, int mods)
   }
 }
 
+void Engine::CursorPos(float xpos, float ypos)
+{
+  float dx = xpos - mouse_last_x_;
+  float dy = ypos - mouse_last_y_;
+
+  if (!mouse_button_status_[1])
+  {
+    // Zoom
+    if (mouse_button_status_[0] && mouse_button_status_[2])
+      camera_.Zoom(dy);
+
+    else if (mouse_button_status_[0])
+      camera_.Rotate(dx, dy);
+
+    else if (mouse_button_status_[2])
+      camera_.Translate(dx, dy);
+  }
+
+  mouse_last_x_ = xpos;
+  mouse_last_y_ = ypos;
+
+  redraw_ = true;
+}
+
+void Engine::MouseButton(int button, int action, int mods, float xpos, float ypos)
+{
+  bool pressed = (action == GLFW_PRESS);
+
+  if (button == GLFW_MOUSE_BUTTON_LEFT)
+    mouse_button_status_[0] = pressed;
+
+  else if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+    mouse_button_status_[1] = pressed;
+
+  else if (button == GLFW_MOUSE_BUTTON_RIGHT)
+    mouse_button_status_[2] = pressed;
+
+  mouse_last_x_ = xpos;
+  mouse_last_y_ = ypos;
+
+  redraw_ = true;
+}
+
 void Engine::Initialize()
 {
   glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
   LoadShaders();
+
+  // Camera
+  camera_.SetPerspective();
+  camera_.SetAspect(static_cast<float>(width_) / height_);
+  camera_.SetFovy(60.f / 3.1415926535897932384626433832795f * 2.f);
+
+  camera_.SetEye(0.f, 0.f, -5.f);
+  camera_.SetUp(0.f, -1.f, 0.f);
+
+  mouse_button_status_[0] = false;
+  mouse_button_status_[1] = false;
+  mouse_button_status_[2] = false;
 
   // Dataset
   dataset_ = &wnp_;
@@ -310,8 +383,8 @@ void Engine::DrawPointCloud(const std::vector<float>& point_cloud, const std::ve
   shader_point_cloud_.Use();
 
   Matrix4f id = Matrix4f::Identity();
-  shader_point_cloud_.UniformMatrix4f("projection", id);
-  shader_point_cloud_.UniformMatrix4f("view", id);
+  shader_point_cloud_.UniformMatrix4f("projection", camera_.ProjectionMatrix());
+  shader_point_cloud_.UniformMatrix4f("view", camera_.ViewMatrix());
   shader_point_cloud_.UniformMatrix4f("model", id);
 
   glBindBuffer(GL_ARRAY_BUFFER, point_cloud_vbo_);

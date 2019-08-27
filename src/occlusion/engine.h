@@ -6,6 +6,7 @@
 #include "occlusion/dataset_utkinect.h"
 #include "occlusion/dataset_wnp.h"
 #include "occlusion/kinect_v2.h"
+#include "occlusion/camera.h"
 
 struct GLFWwindow;
 
@@ -21,6 +22,8 @@ public:
 
   void Resize(int width, int height);
   void Keyboard(int key, int scancode, int action, int mods);
+  void CursorPos(float xpos, float ypos);
+  void MouseButton(int button, int action, int mods, float xpos, float ypos);
 
 private:
   void Initialize();
@@ -38,6 +41,12 @@ private:
   bool animation_ = false;
   double animation_absolute_time_ = 0.;
   double animation_time_ = 0.;
+
+  bool mouse_button_status_[3];
+  float mouse_last_x_;
+  float mouse_last_y_;
+
+  Camera camera_;
 
   // Shaders
   void LoadShaders();
