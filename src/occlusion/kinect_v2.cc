@@ -58,11 +58,11 @@ void KinectV2::GeneratePointCloud()
   point_cloud_.resize(depth_width_ * depth_height_ * 3);
 
   // Depth plane to depth world
-  for (int x = 0; x < depth_width_; x++)
+  for (int x = 1; x <= depth_width_; x++)
   {
-    for (int y = 0; y < depth_height_; y++)
+    for (int y = 1; y <= depth_height_; y++)
     {
-      int index = y + x * depth_height_;
+      int index = (y - 1) + (x - 1) * depth_height_;
       point_cloud_[index * 3 + 0] = (x - depth_params_.cx) * depth_[index] / depth_params_.fx;
       point_cloud_[index * 3 + 1] = (y - depth_params_.cy) * depth_[index] / depth_params_.fy;
       point_cloud_[index * 3 + 2] = depth_[index];
@@ -89,10 +89,12 @@ void KinectV2::GeneratePointCloud()
       point_cloud_color_[depth_index * 3 + 0] = color_[color_index * 3 + 0] / 255.f;
       point_cloud_color_[depth_index * 3 + 1] = color_[color_index * 3 + 1] / 255.f;
       point_cloud_color_[depth_index * 3 + 2] = color_[color_index * 3 + 2] / 255.f;
-
-      //std::cout << point_cloud_color_[depth_index * 3 + 0] << " " << point_cloud_color_[depth_index * 3 + 1] << " " << point_cloud_color_[depth_index * 3 + 2] << std::endl;
     }
   }
+
+  // Convert centimeter unit to meter
+  for (int i = 0; i < point_cloud_.size(); i++)
+    point_cloud_[i] /= 100.f;
 }
 
 const std::vector<float>& KinectV2::GetPointCloud()
