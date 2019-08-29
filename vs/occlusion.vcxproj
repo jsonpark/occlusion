@@ -93,13 +93,16 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\lib\glfw\include;C:\lib\eigen-eigen-323c052e1731;C:\Program Files\MATLAB\R2019a\extern\include;..\src;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\lib\glfw\include;C:\lib\eigen-eigen-323c052e1731;C:\Program Files\MATLAB\R2019a\extern\include;C:\lib\assimp\include;..\src;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_ENABLE_EXTENDED_ALIGNED_STORAGE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>C:\Program Files\MATLAB\R2019a\extern\lib\win64\microsoft;..\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;libmat.lib;libmx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;libmat.lib;libmx.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,15 +128,18 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\lib\glfw\include;C:\lib\eigen-eigen-323c052e1731;C:\Program Files\MATLAB\R2019a\extern\include;..\src;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\lib\glfw\include;C:\lib\eigen-eigen-323c052e1731;C:\Program Files\MATLAB\R2019a\extern\include;C:\lib\assimp\include;..\src;..\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_ENABLE_EXTENDED_ALIGNED_STORAGE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>C:\Program Files\MATLAB\R2019a\extern\lib\win64\microsoft;..\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;libmat.lib;libmx.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;libmat.lib;libmx.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -146,7 +152,10 @@
     <ClCompile Include="..\src\occlusion\engine.cc" />
     <ClCompile Include="..\src\occlusion\kinect_v2.cc" />
     <ClCompile Include="..\src\occlusion\main.cc" />
+    <ClCompile Include="..\src\occlusion\mesh_object.cc" />
     <ClCompile Include="..\src\occlusion\program.cc" />
+    <ClCompile Include="..\src\occlusion\robot_joint.cc" />
+    <ClCompile Include="..\src\occlusion\robot_link.cc" />
     <ClCompile Include="..\src\occlusion\robot_model.cc" />
     <ClCompile Include="..\src\occlusion\robot_model_loader.cc" />
     <ClCompile Include="..\src\occlusion\shader.cc" />
@@ -162,7 +171,11 @@
     <ClInclude Include="..\src\occlusion\dataset_wnp.h" />
     <ClInclude Include="..\src\occlusion\engine.h" />
     <ClInclude Include="..\src\occlusion\kinect_v2.h" />
+    <ClInclude Include="..\src\occlusion\light.h" />
+    <ClInclude Include="..\src\occlusion\mesh_object.h" />
     <ClInclude Include="..\src\occlusion\program.h" />
+    <ClInclude Include="..\src\occlusion\robot_joint.h" />
+    <ClInclude Include="..\src\occlusion\robot_link.h" />
     <ClInclude Include="..\src\occlusion\robot_model.h" />
     <ClInclude Include="..\src\occlusion\robot_model_loader.h" />
     <ClInclude Include="..\src\occlusion\shader.h" />
@@ -177,8 +190,10 @@
     <None Include="..\src\shader\color.vert" />
     <None Include="..\src\shader\depth.frag" />
     <None Include="..\src\shader\depth.vert" />
-    <None Include="..\src\shader\pointcloud_gray.frag" />
-    <None Include="..\src\shader\pointcloud_gray.vert" />
+    <None Include="..\src\shader\pointcloud.frag" />
+    <None Include="..\src\shader\pointcloud.vert" />
+    <None Include="..\src\shader\robot.frag" />
+    <None Include="..\src\shader\robot.vert" />
     <None Include="..\src\shader\texture.frag" />
     <None Include="..\src\shader\texture.vert" />
   </ItemGroup>

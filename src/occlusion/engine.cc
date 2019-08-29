@@ -239,10 +239,11 @@ void Engine::MouseButton(int button, int action, int mods, float xpos, float ypo
 
 void Engine::Initialize()
 {
-  glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
   LoadShaders();
+  LoadRobotModel();
 
   // Camera
   camera_.SetPerspective();
@@ -414,12 +415,79 @@ void Engine::Draw()
   const auto& point_cloud_color = kinect_.GetPointCloudColor();
 
   DrawPointCloud(point_cloud, point_cloud_color);
+
+  // Robot
+  DrawRobot();
+}
+
+void Engine::DrawRobot()
+{
+  shader_robot_.Use();
+
+  Matrix4f id = Matrix4f::Identity();
+  shader_robot_.UniformMatrix4f("projection", camera_.ProjectionMatrix());
+  shader_robot_.UniformMatrix4f("view", camera_.ViewMatrix());
+  shader_robot_.UniformMatrix4f("model", id);
+
+  shader_robot_.Uniform3f("eye_position", camera_.GetEye());
+  shader_robot_.Uniform1i("diffuse_texture", 0);
+
+  //shader_robot_.Uniform3f("material.ambient", );
+  //shader_robot_.Uniform3f("material.diffuse", );
+  //shader_robot_.Uniform3f("material.specular", );
+  //shader_robot_.Uniform1f("material.shininess", );
+  //shader_robot_.Uniform1i("has_diffuse_texture", );
+
+  LoadShaderLightUniforms(shader_robot_);
+}
+
+void Engine::LoadShaderLightUniforms(Program& shader)
+{
+  shader.Use();
+
+  for (int i = 0; i < lights_.size(); i++)
+  {
+    const auto& light = lights_[i];
+    std::string light_name = "lights[" + std::to_string(i) + "]";
+
+    shader.Uniform1i(light_name + ".use", 1);
+
+    switch (light.type)
+    {
+    case Light::Type::Point:
+      shader.Uniform1i(light_name + ".type", 0);
+      break;
+
+    case Light::Type::Directional:
+      shader.Uniform1i(light_name + ".type", 0);
+      shader.Uniform3f(light_name + ".attenuation", light.attenuation);
+      break;
+    }
+
+    shader.Uniform3f(light_name + ".position", light.position);
+    shader.Uniform3f(light_name + ".ambient", light.ambient);
+    shader.Uniform3f(light_name + ".diffuse", light.diffuse);
+    shader.Uniform3f(light_name + ".specular", light.specular);
+  }
+
+  for (int i = lights_.size(); i < 8; i++)
+    shader.Uniform1i("lights[" + std::to_string(i) + "].use", 0);
 }
 
 void Engine::LoadShaders()
 {
   shader_color_ = Program("..\\src\\shader\\texture");
   shader_depth_ = Program("..\\src\\shader\\depth");
-  shader_point_cloud_ = Program("..\\src\\shader\\pointcloud_gray");
+  shader_point_cloud_ = Program("..\\src\\shader\\pointcloud");
+  shader_robot_ = Program("..\\src\\shader\\robot");
+}
+
+void Engine::LoadRobotModel()
+{
+  robot_model_loader_.SetPackageDirectory("..\\..\\fetch_ros");
+  robot_model_ = robot_model_loader_.Load("package://fetch_description\\robots\\fetch.urdf");
+
+  // TODO: Prepare for robot visualization
+  LoadRobotMeshObjects(robot_model_->GetBaseLink());
 }
 }

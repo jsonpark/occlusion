@@ -69,6 +69,15 @@
     <ClCompile Include="..\src\occlusion\camera.cc">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\occlusion\robot_link.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\robot_joint.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\mesh_object.cc">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\glad\glad.h">
@@ -116,6 +125,18 @@
     <ClInclude Include="..\src\occlusion\camera.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\occlusion\robot_link.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\robot_joint.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\light.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\mesh_object.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.gitignore">
@@ -145,10 +166,16 @@
     <None Include="..\src\shader\depth.vert">
       <Filter>shader</Filter>
     </None>
-    <None Include="..\src\shader\pointcloud_gray.frag">
+    <None Include="..\src\shader\robot.frag">
       <Filter>shader</Filter>
     </None>
-    <None Include="..\src\shader\pointcloud_gray.vert">
+    <None Include="..\src\shader\robot.vert">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\src\shader\pointcloud.frag">
+      <Filter>shader</Filter>
+    </None>
+    <None Include="..\src\shader\pointcloud.vert">
       <Filter>shader</Filter>
     </None>
   </ItemGroup>

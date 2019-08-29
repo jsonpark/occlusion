@@ -109,6 +109,21 @@ void Program::Link()
   }
 }
 
+void Program::Uniform1i(const std::string& name, int v)
+{
+  glUniform1i(glGetUniformLocation(id_, name.c_str()), v);
+}
+
+void Program::Uniform1f(const std::string& name, float v)
+{
+  glUniform1f(glGetUniformLocation(id_, name.c_str()), v);
+}
+
+void Program::Uniform3f(const std::string& name, const Vector3f& v)
+{
+  glUniform3fv(glGetUniformLocation(id_, name.c_str()), 1, v.data());
+}
+
 void Program::UniformMatrix3f(const std::string& name, const Matrix3f& m)
 {
   glUniformMatrix3fv(glGetUniformLocation(id_, name.c_str()), 1, GL_FALSE, m.data());

@@ -11,10 +11,7 @@ lib\glad\glad.c(h), lib\KHR\khrplatform.h
 * [glfw](https://www.glfw.org/) - OpenGL window management
   * In Property Pages
     * C/C++ -> General, Additional Include Directories, put your *glfwroot*
-  * Build glfw3.lib and locate at
-```
-lib
-```
+  * Build glfw3.lib and locate at *lib*
 
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) - png, jpg loader
 ```
@@ -35,6 +32,14 @@ lib\tinyxml2\tinyxml2.h(cpp)
     * Debugging, Environment, put your *PATH=matlibroot\bin\win64;%PATH%*
     * C/C++ -> General, Additional Include Directories, put your *matlibroot\extern\include*
     * Linker -> General, Additional Library Directories, put your *matlibroot\extern\lib\win64\microsoft*
+
+* [Assimp]() - Mesh file loader
+  * In Property Pages
+    * C/C++ -> General, Additional Include Directories, put your *assimproot*
+  * Build assimp-vc142-mt.lib and locate at *lib*
+  * Build assimp-vc142-mt.dll and locate at *bin*
+  * In case *assimp/config.h* can't be found, find it where assimp was built and copy-paste to *assimproot/include*
+
 
 ## Vision Dataset
 

@@ -27,6 +27,9 @@ public:
     return id_;
   }
 
+  void Uniform1i(const std::string& name, int v);
+  void Uniform1f(const std::string& name, float v);
+  void Uniform3f(const std::string& name, const Vector3f& v);
   void UniformMatrix3f(const std::string& name, const Matrix3f& m);
   void UniformMatrix4f(const std::string& name, const Matrix4f& m);
 

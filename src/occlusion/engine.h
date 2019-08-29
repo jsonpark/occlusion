@@ -7,6 +7,10 @@
 #include "occlusion/dataset_wnp.h"
 #include "occlusion/kinect_v2.h"
 #include "occlusion/camera.h"
+#include "occlusion/robot_model_loader.h"
+#include "occlusion/robot_model.h"
+#include "occlusion/light.h"
+#include "occlusion/mesh_object.h"
 
 struct GLFWwindow;
 
@@ -31,6 +35,7 @@ private:
 
   void DrawColorDepthImages(const std::vector<unsigned char>& color, const std::vector<unsigned short>& depth);
   void DrawPointCloud(const std::vector<float>& point_cloud, const std::vector<float>& point_cloud_color);
+  void DrawRobot();
 
   // Window
   GLFWwindow* window_ = 0;
@@ -54,6 +59,7 @@ private:
   Program shader_color_;
   Program shader_depth_;
   Program shader_point_cloud_;
+  Program shader_robot_;
 
   // Objects
   GLuint color_rectangle_vao_ = 0;
@@ -76,6 +82,18 @@ private:
 
   // Kinect V2
   KinectV2 kinect_;
+
+  // Robot
+  void LoadRobotModel();
+  void LoadRobotMeshObjects(std::shared_ptr<RobotLink> link);
+
+  RobotModelLoader robot_model_loader_;
+  std::shared_ptr<RobotModel> robot_model_;
+
+  // Rendering lights
+  void LoadShaderLightUniforms(Program& shader);
+
+  std::vector<Light> lights_;
 };
 }
 
