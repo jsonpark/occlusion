@@ -12,6 +12,7 @@ public:
   {
     Vertex,
     Fragment,
+    Geometry,
   };
 
 public:
@@ -28,12 +29,19 @@ public:
     return code_;
   }
 
+  auto IsLoaded() const
+  {
+    return loaded_;
+  }
+
   void PrintCode() const;
 
 private:
   Type type_;
 
   void LoadCodeFromFile(const std::string& filename);
+
+  bool loaded_ = false;
 
   std::string code_;
 };

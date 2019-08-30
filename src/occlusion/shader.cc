@@ -23,6 +23,11 @@ Shader::Shader(const std::string& filename)
     type_ = Type::Fragment;
     LoadCodeFromFile(filename);
   }
+  else if (filename.substr(extension_location) == ".geom")
+  {
+    type_ = Type::Geometry;
+    LoadCodeFromFile(filename);
+  }
   else
     throw std::runtime_error("GlShader class cannot infer shader type (vertex, fragment, etc.) with an unknown extension on the filename.");
 }
@@ -38,6 +43,8 @@ void Shader::LoadCodeFromFile(const std::string& filename)
   code_ = ss.str();
 
   fin.close();
+
+  loaded_ = true;
 }
 
 void Shader::PrintCode() const

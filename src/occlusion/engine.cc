@@ -403,6 +403,7 @@ void Engine::DrawPointCloud(const std::vector<float>& point_cloud, const std::ve
   shader_point_cloud_.UniformMatrix4f("projection", camera_.ProjectionMatrix());
   shader_point_cloud_.UniformMatrix4f("view", camera_.ViewMatrix());
   shader_point_cloud_.UniformMatrix4f("model", model.cast<float>().matrix());
+  shader_point_cloud_.Uniform4f("width_height_near_far", dataset_->DepthWidth(), dataset_->DepthHeight(), camera_.GetNear(), camera_.GetFar());
 
   glBindBuffer(GL_ARRAY_BUFFER, point_cloud_vbo_);
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * point_cloud.size(), point_cloud.data());

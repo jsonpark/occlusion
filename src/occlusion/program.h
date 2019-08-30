@@ -29,7 +29,9 @@ public:
 
   void Uniform1i(const std::string& name, int v);
   void Uniform1f(const std::string& name, float v);
+  void Uniform2f(const std::string& name, float v0, float v1);
   void Uniform3f(const std::string& name, const Vector3f& v);
+  void Uniform4f(const std::string& name, float v0, float v1, float v2, float v3);
   void UniformMatrix3f(const std::string& name, const Matrix3f& m);
   void UniformMatrix4f(const std::string& name, const Matrix4f& m);
 

@@ -21,34 +21,44 @@ public:
   void Load(const std::string& filename);
   void Save(const std::string& filename);
 
-  void SetPerspective()
+  void SetPerspective() noexcept
   {
     projection_type_ = ProjectionType::PERSPECTIVE;
   }
 
-  void SetOrthogonal()
+  void SetOrthogonal() noexcept
   {
     projection_type_ = ProjectionType::ORTHOGONAL;
   }
 
-  void SetAspect(float aspect)
+  void SetAspect(float aspect) noexcept
   {
     aspect_ = aspect;
   }
 
-  void SetFovy(float fovy)
+  void SetFovy(float fovy) noexcept
   {
     fovy_ = fovy;
   }
 
-  void SetNear(float nearf)
+  void SetNear(float nearf) noexcept
   {
     near_ = nearf;
   }
 
-  void SetFar(float farf)
+  auto GetNear() const noexcept
+  {
+    return near_;
+  }
+
+  void SetFar(float farf) noexcept
   {
     far_ = farf;
+  }
+
+  auto GetFar() const noexcept
+  {
+    return far_;
   }
 
   void SetEye(float x, float y, float z)

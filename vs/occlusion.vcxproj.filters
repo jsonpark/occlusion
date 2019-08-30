@@ -184,5 +184,8 @@
     <None Include="..\src\shader\pointcloud.vert">
       <Filter>shader</Filter>
     </None>
+    <None Include="..\src\shader\pointcloud.geom">
+      <Filter>shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

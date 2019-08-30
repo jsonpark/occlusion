@@ -193,6 +193,7 @@
     <None Include="..\src\shader\depth.frag" />
     <None Include="..\src\shader\depth.vert" />
     <None Include="..\src\shader\pointcloud.frag" />
+    <None Include="..\src\shader\pointcloud.geom" />
     <None Include="..\src\shader\pointcloud.vert" />
     <None Include="..\src\shader\robot.frag" />
     <None Include="..\src\shader\robot.vert" />
