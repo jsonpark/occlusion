@@ -92,9 +92,9 @@ void KinectV2::GeneratePointCloud()
     }
   }
 
-  // Convert centimeter unit to meter
+  // Convert millimeter unit to meter
   for (int i = 0; i < point_cloud_.size(); i++)
-    point_cloud_[i] /= 100.f;
+    point_cloud_[i] /= 1000.f;
 }
 
 const std::vector<float>& KinectV2::GetPointCloud()

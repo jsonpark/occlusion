@@ -56,6 +56,11 @@ public:
     eye_ = Vector3f(x, y, z);
   }
 
+  void SetCenter(float x, float y, float z)
+  {
+    center_ = Vector3f(x, y, z);
+  }
+
   void SetUp(float x, float y, float z)
   {
     up_ = Vector3f(x, y, z);
