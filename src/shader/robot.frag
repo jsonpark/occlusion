@@ -81,13 +81,13 @@ void main()
   for (int i = 0; i < NUM_LIGHTS; i++)
   {
     if (lights[i].use)
-	{
-	  if (lights[i].type == 0)
-	    light_color += calc_directional_light(lights[i], material_diffuse, n, v);
+	  {
+  	  if (lights[i].type == 0)
+	      light_color += calc_directional_light(lights[i], material_diffuse, n, v);
 
-	  else if (lights[i].type == 1)
-	    light_color += calc_point_light(lights[i], material_diffuse, n, v);
-	}
+	    else if (lights[i].type == 1)
+  	    light_color += calc_point_light(lights[i], material_diffuse, n, v);
+	  }
   }
 
   out_color = vec4(light_color, 1.f);

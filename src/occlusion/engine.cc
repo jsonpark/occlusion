@@ -10,6 +10,8 @@ namespace occlusion
 {
 namespace
 {
+const double PI = 3.1415926535897932384626433832795;
+
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
   Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
@@ -241,6 +243,7 @@ void Engine::Initialize()
 {
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glEnable(GL_DEPTH_TEST);
 
   LoadShaders();
   LoadRobotModel();
@@ -250,12 +253,22 @@ void Engine::Initialize()
   camera_.SetAspect(static_cast<float>(width_) / height_);
   camera_.SetFovy(60.f / 3.1415926535897932384626433832795f * 2.f);
 
-  camera_.SetEye(0.f, 0.f, -5.f);
-  camera_.SetUp(0.f, -1.f, 0.f);
+  camera_.SetEye(-1.f, 0.f, 1.f);
+  camera_.SetCenter(0.f, 0.f, 1.f);
+  camera_.SetUp(0.f, 0.f, 1.f);
 
   mouse_button_status_[0] = false;
   mouse_button_status_[1] = false;
   mouse_button_status_[2] = false;
+
+  // Light
+  Light light;
+  light.type = Light::Type::Directional;
+  light.position = Vector3f(0.f, 0.f, 1.f);
+  light.ambient = Vector3f(1.f, 1.f, 1.f);
+  light.diffuse = Vector3f(1.f, 1.f, 1.f);
+  light.specular = Vector3f(1.f, 1.f, 1.f);
+  lights_.push_back(light);
 
   // Dataset
   dataset_ = &wnp_;
@@ -383,10 +396,13 @@ void Engine::DrawPointCloud(const std::vector<float>& point_cloud, const std::ve
 {
   shader_point_cloud_.Use();
 
-  Matrix4f id = Matrix4f::Identity();
+  Affine3d model = robot_state_->GetLinkTransform("head_camera_rgb_optical_frame");
+  model.rotate(Eigen::AngleAxisd(PI / 2., Vector3d(0., 1., 0.)));
+  model.rotate(Eigen::AngleAxisd(-PI / 2., Vector3d(1., 0., 0.)));
+
   shader_point_cloud_.UniformMatrix4f("projection", camera_.ProjectionMatrix());
   shader_point_cloud_.UniformMatrix4f("view", camera_.ViewMatrix());
-  shader_point_cloud_.UniformMatrix4f("model", id);
+  shader_point_cloud_.UniformMatrix4f("model", model.cast<float>().matrix());
 
   glBindBuffer(GL_ARRAY_BUFFER, point_cloud_vbo_);
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * point_cloud.size(), point_cloud.data());
@@ -402,6 +418,8 @@ void Engine::DrawPointCloud(const std::vector<float>& point_cloud, const std::ve
 void Engine::Draw()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  robot_state_->ForwardKinematics();
 
   auto rgb_image = dataset_->GetRgbImage();
   auto depth_image = dataset_->GetDepthImage();
@@ -424,6 +442,8 @@ void Engine::DrawRobot()
 {
   shader_robot_.Use();
 
+  LoadShaderLightUniforms(shader_robot_);
+
   Matrix4f id = Matrix4f::Identity();
   shader_robot_.UniformMatrix4f("projection", camera_.ProjectionMatrix());
   shader_robot_.UniformMatrix4f("view", camera_.ViewMatrix());
@@ -432,13 +452,26 @@ void Engine::DrawRobot()
   shader_robot_.Uniform3f("eye_position", camera_.GetEye());
   shader_robot_.Uniform1i("diffuse_texture", 0);
 
-  //shader_robot_.Uniform3f("material.ambient", );
-  //shader_robot_.Uniform3f("material.diffuse", );
-  //shader_robot_.Uniform3f("material.specular", );
-  //shader_robot_.Uniform1f("material.shininess", );
-  //shader_robot_.Uniform1i("has_diffuse_texture", );
+  shader_robot_.Uniform3f("material.ambient", Vector3f(0.2f, 0.2f, 0.2f));
+  shader_robot_.Uniform3f("material.diffuse", Vector3f(0.2f, 0.2f, 0.2f));
+  shader_robot_.Uniform3f("material.specular", Vector3f(1.0f, 1.0f, 1.0f));
+  shader_robot_.Uniform1f("material.shininess", 10.f);
+  shader_robot_.Uniform1i("has_diffuse_texture", 0);
 
-  LoadShaderLightUniforms(shader_robot_);
+  for (const auto& link_transform : robot_state_->GetLinkTransforms())
+  {
+    auto link = link_transform.first;
+    const auto& transform = link_transform.second;
+
+    for (const auto& visual : link->GetVisuals())
+    {
+      Affine3f model = (transform * visual.origin).cast<float>();
+      const auto& mesh_object = mesh_objects_[visual.geometry.mesh_filename];
+
+      shader_robot_.UniformMatrix4f("model", model.matrix());
+      mesh_object.Draw();
+    }
+  }
 }
 
 void Engine::LoadShaderLightUniforms(Program& shader)
@@ -454,12 +487,12 @@ void Engine::LoadShaderLightUniforms(Program& shader)
 
     switch (light.type)
     {
-    case Light::Type::Point:
+    case Light::Type::Directional:
       shader.Uniform1i(light_name + ".type", 0);
       break;
 
-    case Light::Type::Directional:
-      shader.Uniform1i(light_name + ".type", 0);
+    case Light::Type::Point:
+      shader.Uniform1i(light_name + ".type", 1);
       shader.Uniform3f(light_name + ".attenuation", light.attenuation);
       break;
     }
@@ -487,7 +520,15 @@ void Engine::LoadRobotModel()
   robot_model_loader_.SetPackageDirectory("..\\..\\fetch_ros");
   robot_model_ = robot_model_loader_.Load("package://fetch_description\\robots\\fetch.urdf");
 
-  // TODO: Prepare for robot visualization
-  LoadRobotMeshObjects(robot_model_->GetBaseLink());
+  robot_state_ = std::make_shared<RobotState>(robot_model_);
+  robot_state_->ForwardKinematics();
+
+  for (const auto& link_transform : robot_state_->GetLinkTransforms())
+  {
+    auto link = link_transform.first;
+
+    for (const auto& visual : link->GetVisuals())
+      mesh_objects_.insert({ visual.geometry.mesh_filename, MeshObject(visual.geometry.mesh_filename) });
+  }
 }
 }

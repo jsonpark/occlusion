@@ -104,7 +104,19 @@ void MeshObject::PrepareGlResource()
 
   glGenBuffers(1, &vbo_);
   glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices_.size(), &vertices_[0], GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * (vertices_.size() + normals_.size() + tex_coords_.size()), (void*)0, GL_STATIC_DRAW);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * vertices_.size(), &vertices_[0]);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+  glEnableVertexAttribArray(0);
+  glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * vertices_.size(), sizeof(float) * normals_.size(), &normals_[0]);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * vertices_.size()));
+  glEnableVertexAttribArray(1);
+  if (!tex_coords_.empty())
+  {
+    glBufferSubData(GL_ARRAY_BUFFER, sizeof(float) * (vertices_.size() + normals_.size()), sizeof(float) * tex_coords_.size(), &tex_coords_[0]);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * (vertices_.size() + normals_.size())));
+    glEnableVertexAttribArray(2);
+  }
 
   glGenBuffers(1, &ibo_);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_);
@@ -115,10 +127,10 @@ void MeshObject::PrepareGlResource()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void MeshObject::Draw()
+void MeshObject::Draw() const
 {
   glBindVertexArray(vao_);
-  glDrawElements(GL_TRIANGLES, indices_.size() / 3, GL_UNSIGNED_INT, (void*)0);
+  glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, (void*)0);
   glBindVertexArray(0);
 }
 }

@@ -158,6 +158,7 @@
     <ClCompile Include="..\src\occlusion\robot_link.cc" />
     <ClCompile Include="..\src\occlusion\robot_model.cc" />
     <ClCompile Include="..\src\occlusion\robot_model_loader.cc" />
+    <ClCompile Include="..\src\occlusion\robot_state.cc" />
     <ClCompile Include="..\src\occlusion\shader.cc" />
     <ClCompile Include="..\src\occlusion\texture.cc" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="..\src\occlusion\robot_link.h" />
     <ClInclude Include="..\src\occlusion\robot_model.h" />
     <ClInclude Include="..\src\occlusion\robot_model_loader.h" />
+    <ClInclude Include="..\src\occlusion\robot_state.h" />
     <ClInclude Include="..\src\occlusion\shader.h" />
     <ClInclude Include="..\src\occlusion\texture.h" />
     <ClInclude Include="..\src\occlusion\types.h" />

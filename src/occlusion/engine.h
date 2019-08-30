@@ -11,6 +11,7 @@
 #include "occlusion/robot_model.h"
 #include "occlusion/light.h"
 #include "occlusion/mesh_object.h"
+#include "occlusion/robot_state.h"
 
 struct GLFWwindow;
 
@@ -85,10 +86,12 @@ private:
 
   // Robot
   void LoadRobotModel();
-  void LoadRobotMeshObjects(std::shared_ptr<RobotLink> link);
 
   RobotModelLoader robot_model_loader_;
   std::shared_ptr<RobotModel> robot_model_;
+  std::shared_ptr<RobotState> robot_state_;
+
+  std::unordered_map<std::string, MeshObject> mesh_objects_;
 
   // Rendering lights
   void LoadShaderLightUniforms(Program& shader);

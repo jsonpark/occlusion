@@ -1,6 +1,8 @@
 #ifndef OCCLUSION_TYPES_H_
 #define OCCLUSION_TYPES_H_
 
+#include <vector>
+
 #include <Eigen/Dense>
 
 namespace occlusion
@@ -17,6 +19,9 @@ using Matrix4d = Eigen::Matrix4d;
 
 using Affine3f = Eigen::Affine3f;
 using Affine3d = Eigen::Affine3d;
+
+using VectorAffine3f = std::vector<Eigen::Affine3f, Eigen::aligned_allocator<Eigen::Affine3f>>;
+using VectorAffine3d = std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d>>;
 }
 
 #endif // OCCLUSION_TYPES_H_

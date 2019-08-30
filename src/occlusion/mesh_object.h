@@ -14,8 +14,41 @@ public:
   MeshObject(const std::string& filename);
   ~MeshObject();
 
+  MeshObject(const MeshObject& rhs) = delete;
+  MeshObject& operator = (const MeshObject& rhs) = delete;
+
+  MeshObject(MeshObject&& rhs) noexcept
+  {
+    vao_ = rhs.vao_;
+    vbo_ = rhs.vbo_;
+    ibo_ = rhs.ibo_;
+    vertices_ = std::move(rhs.vertices_);
+    normals_ = std::move(rhs.normals_);
+    tex_coords_ = std::move(rhs.tex_coords_);
+    indices_ = std::move(rhs.indices_);
+
+    rhs.vao_ = 0;
+    rhs.vbo_ = 0;
+    rhs.ibo_ = 0;
+  }
+
+  MeshObject& operator = (MeshObject&& rhs) noexcept
+  {
+    vao_ = rhs.vao_;
+    vbo_ = rhs.vbo_;
+    ibo_ = rhs.ibo_;
+    vertices_ = std::move(rhs.vertices_);
+    normals_ = std::move(rhs.normals_);
+    tex_coords_ = std::move(rhs.tex_coords_);
+    indices_ = std::move(rhs.indices_);
+
+    rhs.vao_ = 0;
+    rhs.vbo_ = 0;
+    rhs.ibo_ = 0;
+  }
+
   void Load(const std::string& filename);
-  void Draw();
+  void Draw() const;
 
   const auto& GetDiffuseTextureFilename()
   {
