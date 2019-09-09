@@ -5,13 +5,14 @@
 
 namespace occlusion
 {
-Texture::Texture()
+Texture::Texture() = default;
+
+Texture::Texture(const std::string& filename)
 {
+  Load(filename);
 }
 
-Texture::~Texture()
-{
-}
+Texture::~Texture() = default;
 
 void Texture::Load(const std::string& filename)
 {
@@ -27,5 +28,13 @@ void Texture::Load(int width, int height, std::vector<unsigned char>&& image)
   height_ = height;
   components_ = image.size() / width / height;
   image_ = std::move(image);
+}
+
+void Texture::Clear()
+{
+  width_ = 0;
+  height_ = 0;
+  components_ = 0;
+  image_.clear();
 }
 }

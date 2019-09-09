@@ -2,7 +2,6 @@
 #define OCCLUSION_ENGINE_H_
 
 #include "occlusion/program.h"
-#include "occlusion/texture.h"
 #include "occlusion/dataset_utkinect.h"
 #include "occlusion/dataset_wnp.h"
 #include "occlusion/kinect_v2.h"
@@ -12,6 +11,7 @@
 #include "occlusion/light.h"
 #include "occlusion/mesh_object.h"
 #include "occlusion/robot_state.h"
+#include "occlusion/texture_object.h"
 
 struct GLFWwindow;
 
@@ -93,6 +93,9 @@ private:
   std::shared_ptr<RobotState> robot_state_;
 
   std::unordered_map<std::string, MeshObject> mesh_objects_;
+
+  // Textures
+  std::unordered_map<std::string, TextureObject> texture_objects_;
 
   // Rendering lights
   void LoadShaderLightUniforms(Program& shader);

@@ -26,6 +26,8 @@ public:
     normals_ = std::move(rhs.normals_);
     tex_coords_ = std::move(rhs.tex_coords_);
     indices_ = std::move(rhs.indices_);
+    has_diffuse_texture_ = rhs.has_diffuse_texture_;
+    diffuse_texture_filename_ = std::move(rhs.diffuse_texture_filename_);
 
     rhs.vao_ = 0;
     rhs.vbo_ = 0;
@@ -41,16 +43,24 @@ public:
     normals_ = std::move(rhs.normals_);
     tex_coords_ = std::move(rhs.tex_coords_);
     indices_ = std::move(rhs.indices_);
+    has_diffuse_texture_ = rhs.has_diffuse_texture_;
+    diffuse_texture_filename_ = std::move(rhs.diffuse_texture_filename_);
 
     rhs.vao_ = 0;
     rhs.vbo_ = 0;
     rhs.ibo_ = 0;
+    rhs.diffuse_texture_filename_.clear();
   }
 
   void Load(const std::string& filename);
   void Draw() const;
 
-  const auto& GetDiffuseTextureFilename()
+  bool HasDiffuseTexture() const
+  {
+    return has_diffuse_texture_;
+  }
+
+  const auto& GetDiffuseTextureFilename() const
   {
     return diffuse_texture_filename_;
   }
@@ -69,6 +79,7 @@ private:
   std::vector<float> normals_;
   std::vector<float> tex_coords_;
   std::vector<unsigned int> indices_;
+  bool has_diffuse_texture_ = false;
 
   std::string diffuse_texture_filename_;
 };

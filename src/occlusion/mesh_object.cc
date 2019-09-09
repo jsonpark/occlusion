@@ -68,7 +68,7 @@ void MeshObject::Load(const std::string& filename)
     for (int i = 0; i < mesh->mNumVertices; i++)
     {
       tex_coords_.push_back(mesh->mTextureCoords[0][i].x);
-      tex_coords_.push_back(mesh->mTextureCoords[0][i].y);
+      tex_coords_.push_back(1.f - mesh->mTextureCoords[0][i].y);
     }
   }
 
@@ -79,6 +79,7 @@ void MeshObject::Load(const std::string& filename)
       indices_.push_back(face.mIndices[j]);
   }
 
+  has_diffuse_texture_ = false;
   aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
   int num_diffuse_textures = material->GetTextureCount(aiTextureType_DIFFUSE);
   for (int i = 0; i < num_diffuse_textures; i++)
@@ -89,6 +90,7 @@ void MeshObject::Load(const std::string& filename)
 
     // Make absolute path
     diffuse_texture_filename_ = filename.substr(0, filename.find_last_of("\\/") + 1) + diffuse_texture_filename_;
+    has_diffuse_texture_ = true;
   }
 
   PrepareGlResource();

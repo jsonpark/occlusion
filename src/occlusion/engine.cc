@@ -477,7 +477,6 @@ void Engine::DrawRobot()
   shader_robot_.Uniform3f("material.diffuse", Vector3f(0.2f, 0.2f, 0.2f));
   shader_robot_.Uniform3f("material.specular", Vector3f(1.0f, 1.0f, 1.0f));
   shader_robot_.Uniform1f("material.shininess", 10.f);
-  shader_robot_.Uniform1i("has_diffuse_texture", 0);
 
   for (const auto& link_transform : robot_state_->GetLinkTransforms())
   {
@@ -489,8 +488,19 @@ void Engine::DrawRobot()
       Affine3f model = (transform * visual.origin).cast<float>();
       const auto& mesh_object = mesh_objects_[visual.geometry.mesh_filename];
 
+      if (mesh_object.HasDiffuseTexture())
+      {
+        shader_robot_.Uniform1i("has_diffuse_texture", 1);
+        const auto& texture_filename = mesh_object.GetDiffuseTextureFilename();
+        const auto& texture_object = texture_objects_.find(texture_filename)->second;
+        glBindTexture(GL_TEXTURE_2D, texture_object.GetTextureId());
+      }
+      else
+        shader_robot_.Uniform1i("has_diffuse_texture", 0);
+
       shader_robot_.UniformMatrix4f("model", model.matrix());
       mesh_object.Draw();
+      glBindTexture(GL_TEXTURE_2D, 0);
     }
   }
 }
@@ -549,7 +559,17 @@ void Engine::LoadRobotModel()
     auto link = link_transform.first;
 
     for (const auto& visual : link->GetVisuals())
-      mesh_objects_.insert({ visual.geometry.mesh_filename, MeshObject(visual.geometry.mesh_filename) });
+    {
+      MeshObject mesh_object(visual.geometry.mesh_filename);
+
+      if (mesh_object.HasDiffuseTexture())
+      {
+        const auto& texture_filename = mesh_object.GetDiffuseTextureFilename();
+        texture_objects_.insert({texture_filename, TextureObject(texture_filename)});
+      }
+
+      mesh_objects_.insert({ visual.geometry.mesh_filename, std::move(mesh_object) });
+    }
   }
 }
 }

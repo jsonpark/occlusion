@@ -161,6 +161,7 @@
     <ClCompile Include="..\src\occlusion\robot_state.cc" />
     <ClCompile Include="..\src\occlusion\shader.cc" />
     <ClCompile Include="..\src\occlusion\texture.cc" />
+    <ClCompile Include="..\src\occlusion\texture_object.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\glad\glad.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="..\src\occlusion\robot_state.h" />
     <ClInclude Include="..\src\occlusion\shader.h" />
     <ClInclude Include="..\src\occlusion\texture.h" />
+    <ClInclude Include="..\src\occlusion\texture_object.h" />
     <ClInclude Include="..\src\occlusion\types.h" />
   </ItemGroup>
   <ItemGroup>
