@@ -146,7 +146,6 @@ void Engine::Resize(int width, int height)
 {
   width_ = width;
   height_ = height;
-  glViewport(0, 0, width, height);
 }
 
 void Engine::Keyboard(int key, int scancode, int action, int mods)
@@ -250,7 +249,7 @@ void Engine::Initialize()
 
   // Camera
   camera_.SetPerspective();
-  camera_.SetAspect(static_cast<float>(width_) / height_);
+  camera_.SetAspect(static_cast<float>(width_ / 2) / height_);
   camera_.SetFovy(60.f / 3.1415926535897932384626433832795f * 2.f);
 
   camera_.SetEye(-1.f, 0.f, 1.f);
@@ -420,12 +419,21 @@ void Engine::Draw()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  glViewport(width_ / 2, 0, (width_ + 1) / 2, height_);
+
   robot_state_->ForwardKinematics();
+
+  static bool f = false;
+  if (!f)
+    ViewFromRobotCamera();
+  f = true;
 
   auto rgb_image = dataset_->GetRgbImage();
   auto depth_image = dataset_->GetDepthImage();
 
-  // DrawColorDepthImages(rgb_image, depth_image);
+  DrawColorDepthImages(rgb_image, depth_image);
+
+  glViewport(0, 0, width_ / 2, height_);
 
   // Point cloud
   kinect_.FeedFrame(std::move(rgb_image), std::move(depth_image));
@@ -437,6 +445,18 @@ void Engine::Draw()
 
   // Robot
   DrawRobot();
+}
+
+void Engine::ViewFromRobotCamera()
+{
+  Affine3d model = robot_state_->GetLinkTransform("head_camera_rgb_optical_frame");
+
+  Matrix4f transform = model.cast<float>().matrix();
+  Vector3f y = transform.block(0, 1, 3, 1);
+  Vector3f eye = transform.block(0, 3, 3, 1);
+
+  camera_.SetEye(eye + y * 0.001);
+  camera_.SetCenter(eye + y * 1.001);
 }
 
 void Engine::DrawRobot()

@@ -66,9 +66,19 @@ public:
     eye_ = Vector3f(x, y, z);
   }
 
+  void SetEye(const Vector3f& eye)
+  {
+    eye_ = eye;
+  }
+
   void SetCenter(float x, float y, float z)
   {
     center_ = Vector3f(x, y, z);
+  }
+
+  void SetCenter(const Vector3f& center)
+  {
+    center_ = center;
   }
 
   void SetUp(float x, float y, float z)

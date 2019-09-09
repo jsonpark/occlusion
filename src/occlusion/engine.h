@@ -86,6 +86,7 @@ private:
 
   // Robot
   void LoadRobotModel();
+  void ViewFromRobotCamera();
 
   RobotModelLoader robot_model_loader_;
   std::shared_ptr<RobotModel> robot_model_;
