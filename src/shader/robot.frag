@@ -45,7 +45,7 @@ vec3 calc_directional_light(Light light, vec3 material_diffuse, vec3 n, vec3 v)
   vec3 diffuse = diff * light.diffuse * material_diffuse;
   vec3 specular = spec * (light.specular * material.specular);
 
-  return ambient + diffuse + specular;
+  return ambient + diffuse;// + specular;
 }
 
 vec3 calc_point_light(Light light, vec3 material_diffuse, vec3 n, vec3 v)

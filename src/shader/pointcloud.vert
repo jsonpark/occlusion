@@ -22,6 +22,6 @@ void main()
   gl_Position = projection * vm;
 
   frag.color = color;
-  frag.width = -vm.z * 2.f / width_height_near_far[0];
-  frag.height = -vm.z * 2.f / width_height_near_far[1];
+  frag.width = (-vm.z * 2.f / width_height_near_far[0]) * 1.3;
+  frag.height = (-vm.z * 2.f / width_height_near_far[1]) * 1.3;
 }

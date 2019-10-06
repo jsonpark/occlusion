@@ -86,6 +86,11 @@ public:
     up_ = Vector3f(x, y, z);
   }
 
+  void SetUp(const Vector3f& up)
+  {
+    up_ = up;
+  }
+
   const auto& GetEye() const noexcept
   {
     return eye_;

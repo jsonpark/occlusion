@@ -26,12 +26,20 @@ void RobotState::Prepare(std::shared_ptr<RobotLink> link)
   }
 }
 
-void RobotState::AddJointNames(const std::string& joint_name)
+void RobotState::AddJointName(const std::string& joint_name)
 {
   int index = joint_names_.size();
   joint_name_index_[joint_name] = index;
   joint_names_.push_back(joint_name);
   joint_values_.push_back(0.);
+}
+
+void RobotState::SetJointValue(const std::string& joint_name, double joint_value)
+{
+  if (joint_name_index_.find(joint_name) == joint_name_index_.cend())
+    AddJointName(joint_name);
+
+  joint_values_[joint_name_index_[joint_name]] = joint_value;
 }
 
 void RobotState::SetBaseTransform(const Affine3d& transform)

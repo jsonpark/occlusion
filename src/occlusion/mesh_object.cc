@@ -37,7 +37,7 @@ void MeshObject::Clear()
 void MeshObject::Load(const std::string& filename)
 {
   Assimp::Importer importer;
-  const aiScene* scene = importer.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
+  const aiScene* scene = importer.ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals);
   if (scene == NULL)
     return;
 
@@ -68,7 +68,7 @@ void MeshObject::Load(const std::string& filename)
     for (int i = 0; i < mesh->mNumVertices; i++)
     {
       tex_coords_.push_back(mesh->mTextureCoords[0][i].x);
-      tex_coords_.push_back(1.f - mesh->mTextureCoords[0][i].y);
+      tex_coords_.push_back(mesh->mTextureCoords[0][i].y);
     }
   }
 

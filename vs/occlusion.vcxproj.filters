@@ -25,6 +25,9 @@
     <Filter Include="lib\tinyxml2">
       <UniqueIdentifier>{c6ef714a-fcb0-4ae7-a9fe-0b0ef73330c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\widget">
+      <UniqueIdentifier>{0d41bf4b-84e5-4005-87cc-a77b15e925da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\occlusion\main.cc">
@@ -83,6 +86,15 @@
     </ClCompile>
     <ClCompile Include="..\src\occlusion\texture_object.cc">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\widget\widget.cc">
+      <Filter>src\widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\widget\image_viewer.cc">
+      <Filter>src\widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\widget\camera_viewer.cc">
+      <Filter>src\widget</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -148,6 +160,15 @@
     </ClInclude>
     <ClInclude Include="..\src\occlusion\texture_object.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\widget\widget.h">
+      <Filter>src\widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\widget\image_viewer.h">
+      <Filter>src\widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\widget\camera_viewer.h">
+      <Filter>src\widget</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

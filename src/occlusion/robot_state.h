@@ -15,7 +15,8 @@ public:
 
   ~RobotState();
 
-  void AddJointNames(const std::string& joint_name);
+  void AddJointName(const std::string& joint_name);
+  void SetJointValue(const std::string& joint_name, double joint_value);
 
   void SetBaseTransform(const Affine3d& transform);
 

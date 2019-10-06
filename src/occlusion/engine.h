@@ -12,6 +12,7 @@
 #include "occlusion/mesh_object.h"
 #include "occlusion/robot_state.h"
 #include "occlusion/texture_object.h"
+#include "occlusion/widget/widget.h"
 
 struct GLFWwindow;
 
@@ -30,13 +31,18 @@ public:
   void CursorPos(float xpos, float ypos);
   void MouseButton(int button, int action, int mods, float xpos, float ypos);
 
+  void UseColorImageShader();
+  void UseGrayImageShader();
+
 private:
   void Initialize();
   void Draw();
 
-  void DrawColorDepthImages(const std::vector<unsigned char>& color, const std::vector<unsigned short>& depth);
+  void UpdateColorDepthImages(const std::vector<unsigned char>& color, const std::vector<unsigned short>& depth);
   void DrawPointCloud(const std::vector<float>& point_cloud, const std::vector<float>& point_cloud_color);
   void DrawRobot();
+
+  void InitializeRobotState();
 
   // Window
   GLFWwindow* window_ = 0;
@@ -54,6 +60,9 @@ private:
 
   Camera camera_;
 
+  // Widgets
+  std::vector<std::shared_ptr<Widget>> widgets_;
+
   // Shaders
   void LoadShaders();
 
@@ -63,14 +72,6 @@ private:
   Program shader_robot_;
 
   // Objects
-  GLuint color_rectangle_vao_ = 0;
-  GLuint color_rectangle_vbo_ = 0;
-  GLuint depth_rectangle_vao_ = 0;
-  GLuint depth_rectangle_vbo_ = 0;
-  GLuint rectangle_ibo_ = 0;
-  GLuint color_texture_ = 0;
-  GLuint depth_texture_ = 0;
-
   GLuint point_cloud_vao_ = 0;
   GLuint point_cloud_vbo_ = 0;
   GLuint point_cloud_color_vbo_ = 0;

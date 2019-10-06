@@ -162,6 +162,9 @@
     <ClCompile Include="..\src\occlusion\shader.cc" />
     <ClCompile Include="..\src\occlusion\texture.cc" />
     <ClCompile Include="..\src\occlusion\texture_object.cc" />
+    <ClCompile Include="..\src\occlusion\widget\camera_viewer.cc" />
+    <ClCompile Include="..\src\occlusion\widget\image_viewer.cc" />
+    <ClCompile Include="..\src\occlusion\widget\widget.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\lib\glad\glad.h" />
@@ -185,6 +188,9 @@
     <ClInclude Include="..\src\occlusion\texture.h" />
     <ClInclude Include="..\src\occlusion\texture_object.h" />
     <ClInclude Include="..\src\occlusion\types.h" />
+    <ClInclude Include="..\src\occlusion\widget\camera_viewer.h" />
+    <ClInclude Include="..\src\occlusion\widget\image_viewer.h" />
+    <ClInclude Include="..\src\occlusion\widget\widget.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\fetch_ros\fetch_description\robots\fetch.urdf" />

@@ -6,6 +6,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "occlusion/widget/image_viewer.h"
+#include "occlusion/widget/camera_viewer.h"
+
 namespace occlusion
 {
 namespace
@@ -42,19 +45,12 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 }
 
 Engine::Engine()
-  : width_(1366), height_(768)
+  : width_(800), height_(600)
 {
 }
 
 Engine::~Engine()
 {
-  glDeleteVertexArrays(1, &color_rectangle_vao_);
-  glDeleteBuffers(1, &color_rectangle_vbo_);
-  glDeleteVertexArrays(1, &depth_rectangle_vao_);
-  glDeleteBuffers(1, &depth_rectangle_vbo_);
-  glDeleteBuffers(1, &rectangle_ibo_);
-  glDeleteTextures(1, &color_texture_);
-  glDeleteTextures(1, &depth_texture_);
   glDeleteVertexArrays(1, &point_cloud_vao_);
   glDeleteBuffers(1, &point_cloud_vbo_);
   glDeleteBuffers(1, &point_cloud_color_vbo_);
@@ -75,7 +71,7 @@ void Engine::Run()
     glfwTerminate();
     return;
   }
-  
+
   glfwSwapInterval(1);
 
   glfwMakeContextCurrent(window_);
@@ -95,6 +91,8 @@ void Engine::Run()
   glfwSetMouseButtonCallback(window_, MouseButtonCallback);
 
   Resize(width_, height_);
+
+  glfwMaximizeWindow(window_);
 
   // Rendering loop
   Initialize();
@@ -146,6 +144,14 @@ void Engine::Resize(int width, int height)
 {
   width_ = width;
   height_ = height;
+
+  if (widgets_.size() >= 4)
+  {
+    widgets_[0]->Resize(0, 0, width_ / 2, height_ / 2);
+    widgets_[1]->Resize(0, height_ / 2, width_ / 2, height_ / 2);
+    widgets_[2]->Resize(width_ / 2, 0, (width_ + 1) / 2, height_ / 2);
+    widgets_[3]->Resize(width_ / 2, height_ / 2, (width_ + 1) / 2, (height_ + 1) / 2);
+  }
 }
 
 void Engine::Keyboard(int key, int scancode, int action, int mods)
@@ -240,21 +246,30 @@ void Engine::MouseButton(int button, int action, int mods, float xpos, float ypo
 
 void Engine::Initialize()
 {
+  // Widgets
+  widgets_.push_back(std::make_shared<CameraViewer>(this, 0, 0, width_ / 2, height_ / 2));
+  widgets_.push_back(std::make_shared<CameraViewer>(this, 0, height_ / 2, width_ / 2, (height_ + 1) / 2));
+  widgets_.push_back(std::make_shared<ImageViewer>(this, width_ / 2, 0, (width_ + 1) / 2, height_ / 2));
+  widgets_.push_back(std::make_shared<ImageViewer>(this, width_ / 2, height_ / 2, (width_ + 1) / 2, (height_ + 1) / 2));
+
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   glEnable(GL_DEPTH_TEST);
 
   LoadShaders();
   LoadRobotModel();
+  InitializeRobotState();
 
   // Camera
   camera_.SetPerspective();
   camera_.SetAspect(static_cast<float>(width_ / 2) / height_);
   camera_.SetFovy(60.f / 3.1415926535897932384626433832795f * 2.f);
 
+  /*
   camera_.SetEye(-1.f, 0.f, 1.f);
   camera_.SetCenter(0.f, 0.f, 1.f);
   camera_.SetUp(0.f, 0.f, 1.f);
+  */
 
   mouse_button_status_[0] = false;
   mouse_button_status_[1] = false;
@@ -264,89 +279,27 @@ void Engine::Initialize()
   Light light;
   light.type = Light::Type::Directional;
   light.position = Vector3f(0.f, 0.f, 1.f);
-  light.ambient = Vector3f(1.f, 1.f, 1.f);
-  light.diffuse = Vector3f(1.f, 1.f, 1.f);
-  light.specular = Vector3f(1.f, 1.f, 1.f);
+  light.ambient = Vector3f(0.2f, 0.2f, 0.2f);
+  light.diffuse = Vector3f(0.2f, 0.2f, 0.2f);
+  light.specular = Vector3f(0.2f, 0.2f, 0.2f);
+  lights_.push_back(light);
+
+  light.position = Vector3f(-1.f, -1.f, 1.f);
+  lights_.push_back(light);
+
+  light.position = Vector3f(-1.f, 1.f, 1.f);
+  lights_.push_back(light);
+
+  light.position = Vector3f(1.f, -1.f, 1.f);
+  lights_.push_back(light);
+
+  light.position = Vector3f(1.f, 1.f, 1.f);
   lights_.push_back(light);
 
   // Dataset
   dataset_ = &wnp_;
 
   dataset_->SelectSequence(0);
-
-  glGenTextures(1, &color_texture_);
-  glBindTexture(GL_TEXTURE_2D, color_texture_);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGB, dataset_->RgbWidth(), dataset_->RgbHeight());
-
-  glGenTextures(1, &depth_texture_);
-  glBindTexture(GL_TEXTURE_2D, depth_texture_);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RED, dataset_->DepthHeight(), dataset_->DepthWidth());
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-
-  // Rectangles
-  double aspect_rgb = static_cast<double>(dataset_->RgbWidth()) / dataset_->RgbHeight();
-  double aspect_depth = static_cast<double>(dataset_->DepthWidth()) / dataset_->DepthHeight();
-  double aspect = aspect_rgb + aspect_depth;
-  double height = 2. / aspect;
-
-  float color_rectangle_buffer[] = {
-    -aspect_rgb / 2.f, 0.f, 0.f, 0.f,
-    aspect_rgb / 2.f, 0.f, 1.f, 0.f,
-    aspect_rgb / 2.f, 1.f, 1.f, 1.f,
-    -aspect_rgb / 2.f, 1.f, 0.f, 1.f,
-  };
-
-  float depth_rectangle_buffer[] = {
-    -aspect_depth / 2.f, -1.f, 0.f, 0.f,
-    aspect_depth / 2.f, -1.f, 1.f, 0.f,
-    aspect_depth / 2.f, 0.f, 1.f, 1.f,
-    -aspect_depth / 2.f, 0.f, 0.f, 1.f,
-  };
-
-  int rectangle_index_buffer[] = {
-    0, 1, 2, 3
-  };
-
-  glGenVertexArrays(1, &color_rectangle_vao_);
-  glBindVertexArray(color_rectangle_vao_);
-
-  glGenBuffers(1, &color_rectangle_vbo_);
-  glBindBuffer(GL_ARRAY_BUFFER, color_rectangle_vbo_);
-  glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), color_rectangle_buffer, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0));
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-  glEnableVertexAttribArray(1);
-
-  glGenBuffers(1, &rectangle_ibo_);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectangle_ibo_);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(int), rectangle_index_buffer, GL_STATIC_DRAW);
-
-  glGenVertexArrays(1, &depth_rectangle_vao_);
-  glBindVertexArray(depth_rectangle_vao_);
-
-  glGenBuffers(1, &depth_rectangle_vbo_);
-  glBindBuffer(GL_ARRAY_BUFFER, depth_rectangle_vbo_);
-  glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), depth_rectangle_buffer, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0));
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-  glEnableVertexAttribArray(1);
-
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectangle_ibo_);
-
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
   // Point cloud vertex array
   glGenVertexArrays(1, &point_cloud_vao_);
@@ -368,27 +321,23 @@ void Engine::Initialize()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Engine::DrawColorDepthImages(const std::vector<unsigned char>& color, const std::vector<unsigned short>& depth)
+void Engine::UseColorImageShader()
 {
-  // Texture
-  glBindTexture(GL_TEXTURE_2D, color_texture_);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, dataset_->RgbWidth(), dataset_->RgbHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, &color[0]);
-
   shader_color_.Use();
-  glBindVertexArray(color_rectangle_vao_);
-  glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, 0);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glBindVertexArray(0);
+}
 
-  // Depth image
-  glBindTexture(GL_TEXTURE_2D, depth_texture_);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, dataset_->DepthHeight(), dataset_->DepthWidth(), 0, GL_RED, GL_UNSIGNED_SHORT, &depth[0]);
-
+void Engine::UseGrayImageShader()
+{
   shader_depth_.Use();
-  glBindVertexArray(depth_rectangle_vao_);
-  glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, 0);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glBindVertexArray(0);
+}
+
+void Engine::UpdateColorDepthImages(const std::vector<unsigned char>& color, const std::vector<unsigned short>& depth)
+{
+  auto image_viewer = std::dynamic_pointer_cast<ImageViewer>(widgets_[2]);
+  image_viewer->SetColorImage(dataset_->RgbWidth(), dataset_->RgbHeight(), color);
+
+  auto depth_viewer = std::dynamic_pointer_cast<ImageViewer>(widgets_[3]);
+  depth_viewer->SetGrayImage(dataset_->DepthWidth(), dataset_->DepthHeight(), depth, true);
 }
 
 void Engine::DrawPointCloud(const std::vector<float>& point_cloud, const std::vector<float>& point_cloud_color)
@@ -419,23 +368,19 @@ void Engine::Draw()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glViewport(width_ / 2, 0, (width_ + 1) / 2, height_);
-
   robot_state_->ForwardKinematics();
-
-  static bool f = false;
-  if (!f)
-    ViewFromRobotCamera();
-  f = true;
 
   auto rgb_image = dataset_->GetRgbImage();
   auto depth_image = dataset_->GetDepthImage();
 
-  DrawColorDepthImages(rgb_image, depth_image);
+  UpdateColorDepthImages(rgb_image, depth_image);
 
-  glViewport(0, 0, width_ / 2, height_);
+  widgets_[2]->Draw();
+  widgets_[3]->Draw();
 
   // Point cloud
+  glViewport(0, 0, width_ / 2, height_ / 2);
+
   kinect_.FeedFrame(std::move(rgb_image), std::move(depth_image));
   kinect_.GeneratePointCloud();
   const auto& point_cloud = kinect_.GetPointCloud();
@@ -452,11 +397,13 @@ void Engine::ViewFromRobotCamera()
   Affine3d model = robot_state_->GetLinkTransform("head_camera_rgb_optical_frame");
 
   Matrix4f transform = model.cast<float>().matrix();
+  Vector3f x = transform.block(0, 0, 3, 1);
   Vector3f y = transform.block(0, 1, 3, 1);
   Vector3f eye = transform.block(0, 3, 3, 1);
 
   camera_.SetEye(eye + y * 0.001);
   camera_.SetCenter(eye + y * 1.001);
+  camera_.SetUp(x);
 }
 
 void Engine::DrawRobot()
@@ -476,7 +423,7 @@ void Engine::DrawRobot()
   shader_robot_.Uniform3f("material.ambient", Vector3f(0.2f, 0.2f, 0.2f));
   shader_robot_.Uniform3f("material.diffuse", Vector3f(0.2f, 0.2f, 0.2f));
   shader_robot_.Uniform3f("material.specular", Vector3f(1.0f, 1.0f, 1.0f));
-  shader_robot_.Uniform1f("material.shininess", 10.f);
+  shader_robot_.Uniform1f("material.shininess", 100.f);
 
   for (const auto& link_transform : robot_state_->GetLinkTransforms())
   {
@@ -571,5 +518,24 @@ void Engine::LoadRobotModel()
       mesh_objects_.insert({ visual.geometry.mesh_filename, std::move(mesh_object) });
     }
   }
+}
+
+void Engine::InitializeRobotState()
+{
+  robot_state_->SetJointValue("torso_lift_joint", 0.193075);
+  robot_state_->SetJointValue("head_tilt_joint", 0.345);
+  robot_state_->SetJointValue("shoulder_pan_joint", -0.2338021);
+  robot_state_->SetJointValue("shoulder_lift_joint", 0.21);
+  robot_state_->SetJointValue("upperarm_roll_joint", -0.331486);
+  robot_state_->SetJointValue("elbow_flex_joint", -0.455);
+  robot_state_->SetJointValue("forearm_roll_joint", -0.231486);
+  robot_state_->SetJointValue("wrist_flex_joint", 1.31874);
+  robot_state_->SetJointValue("wrist_roll_joint", -0.429902);
+  robot_state_->SetJointValue("r_gripper_finger_joint", 0.025);
+  robot_state_->SetJointValue("l_gripper_finger_joint", 0.025);
+  robot_state_->SetJointValue("bellows_joint", 0.2);
+
+  robot_state_->ForwardKinematics();
+  ViewFromRobotCamera();
 }
 }
