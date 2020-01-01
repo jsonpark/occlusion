@@ -55,7 +55,10 @@ void KinectV2::FeedFrame(std::vector<unsigned char>&& color, std::vector<unsigne
 
 void KinectV2::GeneratePointCloud()
 {
-  point_cloud_.resize(depth_width_ * depth_height_ * 3);
+  std::vector<float> coords;
+  std::vector<float> colors;
+
+  coords.resize(depth_width_ * depth_height_ * 3);
 
   // Depth plane to depth world
   for (int x = 1; x <= depth_width_; x++)
@@ -63,18 +66,18 @@ void KinectV2::GeneratePointCloud()
     for (int y = 1; y <= depth_height_; y++)
     {
       int index = (y - 1) + (x - 1) * depth_height_;
-      point_cloud_[index * 3 + 0] = (x - depth_params_.cx) * depth_[index] / depth_params_.fx;
-      point_cloud_[index * 3 + 1] = (y - depth_params_.cy) * depth_[index] / depth_params_.fy;
-      point_cloud_[index * 3 + 2] = depth_[index];
+      coords[index * 3 + 0] = (x - depth_params_.cx) * depth_[index] / depth_params_.fx;
+      coords[index * 3 + 1] = (y - depth_params_.cy) * depth_[index] / depth_params_.fy;
+      coords[index * 3 + 2] = depth_[index];
     }
   }
 
   // Depth world to color world to color plane
-  point_cloud_color_.resize(depth_width_ * depth_height_ * 3);
-  std::fill(point_cloud_color_.begin(), point_cloud_color_.end(), 0.f);
-  for (int i = 0; i < point_cloud_.size() / 3; i++)
+  colors.resize(depth_width_ * depth_height_ * 3);
+  std::fill(colors.begin(), colors.end(), 0.f);
+  for (int i = 0; i < colors.size() / 3; i++)
   {
-    Vector3f color_plane = (rotation_ * Vector3d(point_cloud_[i * 3 + 0], point_cloud_[i * 3 + 1], point_cloud_[i * 3 + 2]) + translation_).cast<float>();
+    Vector3f color_plane = (rotation_ * Vector3d(coords[i * 3 + 0], coords[i * 3 + 1], coords[i * 3 + 2]) + translation_).cast<float>();
     color_plane(0) = color_plane(0) * color_params_.fx / color_plane(2) + color_params_.cx;
     color_plane(1) = color_plane(1) * color_params_.fy / color_plane(2) + color_params_.cy;
 
@@ -86,24 +89,16 @@ void KinectV2::GeneratePointCloud()
       int depth_index = i;
       int color_index = (rounded(0) - 1) + (color_height_ - (rounded(1) - 1) - 1) * color_width_;
 
-      point_cloud_color_[depth_index * 3 + 0] = color_[color_index * 3 + 0] / 255.f;
-      point_cloud_color_[depth_index * 3 + 1] = color_[color_index * 3 + 1] / 255.f;
-      point_cloud_color_[depth_index * 3 + 2] = color_[color_index * 3 + 2] / 255.f;
+      colors[depth_index * 3 + 0] = color_[color_index * 3 + 0] / 255.f;
+      colors[depth_index * 3 + 1] = color_[color_index * 3 + 1] / 255.f;
+      colors[depth_index * 3 + 2] = color_[color_index * 3 + 2] / 255.f;
     }
   }
 
   // Convert millimeter unit to meter
-  for (int i = 0; i < point_cloud_.size(); i++)
-    point_cloud_[i] /= 1000.f;
-}
+  for (int i = 0; i < coords.size(); i++)
+    coords[i] /= 1000.f;
 
-const std::vector<float>& KinectV2::GetPointCloud()
-{
-  return point_cloud_;
-}
-
-const std::vector<float>& KinectV2::GetPointCloudColor()
-{
-  return point_cloud_color_;
+  point_cloud_.SetBuffers(std::move(coords), std::move(colors));
 }
 }

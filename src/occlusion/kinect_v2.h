@@ -1,7 +1,8 @@
 #ifndef OCCLUSION_KINECT_V2_H_
 #define OCCLUSION_KINECT_V2_H_
 
-#include <occlusion/types.h>
+#include "occlusion/types.h"
+#include "occlusion/data/point_cloud.h"
 
 namespace occlusion
 {
@@ -39,8 +40,10 @@ public:
   void FeedFrame(std::vector<unsigned char>&& color, std::vector<unsigned short>&& depth);
   void GeneratePointCloud();
 
-  const std::vector<float>& GetPointCloud();
-  const std::vector<float>& GetPointCloudColor();
+  const auto& GetPointCloud() const
+  {
+    return point_cloud_;
+  }
 
 private:
   Matrix3d rotation_;
@@ -49,11 +52,7 @@ private:
   std::vector<unsigned char> color_;
   std::vector<unsigned short> depth_;
 
-  // [3i * 0, 3i * 1, 3i * 2] = [x[i], y[i], z[i]]
-  std::vector<float> point_cloud_;
-
-  // color image
-  std::vector<float> point_cloud_color_;
+  PointCloud point_cloud_;
 };
 }
 

@@ -1,4 +1,4 @@
-#include "occlusion/shader.h"
+#include "occlusion/shader/shader.h"
 
 #include <fstream>
 #include <sstream>

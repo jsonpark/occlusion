@@ -1,5 +1,5 @@
-#ifndef OCCLUSION_MESH_OBJECT_H_
-#define OCCLUSION_MESH_OBJECT_H_
+#ifndef OCCLUSION_OBJECT_MESH_OBJECT_H_
+#define OCCLUSION_OBJECT_MESH_OBJECT_H_
 
 #include "occlusion/types.h"
 
@@ -32,6 +32,7 @@ public:
     rhs.vao_ = 0;
     rhs.vbo_ = 0;
     rhs.ibo_ = 0;
+    rhs.diffuse_texture_filename_.clear();
   }
 
   MeshObject& operator = (MeshObject&& rhs) noexcept
@@ -50,6 +51,8 @@ public:
     rhs.vbo_ = 0;
     rhs.ibo_ = 0;
     rhs.diffuse_texture_filename_.clear();
+
+    return *this;
   }
 
   void Load(const std::string& filename);
@@ -85,4 +88,4 @@ private:
 };
 }
 
-#endif // OCCLUSION_MESH_OBJECT_H_
+#endif // OCCLUSION_OBJECT_MESH_OBJECT_H_

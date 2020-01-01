@@ -1,5 +1,5 @@
-#ifndef OCCLUSION_SHADER_H_
-#define OCCLUSION_SHADER_H_
+#ifndef OCCLUSION_SHADER_SHADER_H_
+#define OCCLUSION_SHADER_SHADER_H_
 
 #include <string>
 
@@ -47,4 +47,4 @@ private:
 };
 }
 
-#endif // OCCLUSION_SHADER_H_
+#endif // OCCLUSION_SHADER_SHADER_H_

@@ -1,4 +1,4 @@
-#include "occlusion/mesh_object.h"
+#include "occlusion/object/mesh_object.h"
 
 #include <iostream>
 

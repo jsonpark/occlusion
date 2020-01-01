@@ -1,18 +1,21 @@
 #ifndef OCCLUSION_ENGINE_H_
 #define OCCLUSION_ENGINE_H_
 
-#include "occlusion/program.h"
+#include "occlusion/shader/shaders.h"
 #include "occlusion/dataset_utkinect.h"
 #include "occlusion/dataset_wnp.h"
 #include "occlusion/kinect_v2.h"
 #include "occlusion/camera.h"
 #include "occlusion/robot_model_loader.h"
 #include "occlusion/robot_model.h"
-#include "occlusion/light.h"
-#include "occlusion/mesh_object.h"
 #include "occlusion/robot_state.h"
-#include "occlusion/texture_object.h"
+#include "occlusion/object/mesh_object.h"
+#include "occlusion/object/texture_object.h"
+#include "occlusion/object/point_cloud_object.h"
 #include "occlusion/widget/widget.h"
+#include "occlusion/data/light.h"
+#include "occlusion/data/point_cloud.h"
+#include "occlusion/scene/scene.h"
 
 struct GLFWwindow;
 
@@ -34,12 +37,14 @@ public:
   void UseColorImageShader();
   void UseGrayImageShader();
 
+  void UseShader(const std::string& name);
+
 private:
   void Initialize();
   void Draw();
 
   void UpdateColorDepthImages(const std::vector<unsigned char>& color, const std::vector<unsigned short>& depth);
-  void DrawPointCloud(const std::vector<float>& point_cloud, const std::vector<float>& point_cloud_color);
+  void DrawPointCloud();
   void DrawRobot();
 
   void InitializeRobotState();
@@ -58,6 +63,9 @@ private:
   float mouse_last_x_;
   float mouse_last_y_;
 
+  // Scene
+  std::shared_ptr<Scene> scene_;
+
   Camera camera_;
 
   // Widgets
@@ -66,15 +74,11 @@ private:
   // Shaders
   void LoadShaders();
 
-  Program shader_color_;
-  Program shader_depth_;
-  Program shader_point_cloud_;
-  Program shader_robot_;
+  Shaders shaders_;
+  Program* shader_;
 
   // Objects
-  GLuint point_cloud_vao_ = 0;
-  GLuint point_cloud_vbo_ = 0;
-  GLuint point_cloud_color_vbo_ = 0;
+  std::shared_ptr<PointCloudObject> point_cloud_object_;
 
   // Dataset
   UtKinect utkinect_;
@@ -89,7 +93,6 @@ private:
   void LoadRobotModel();
   void ViewFromRobotCamera();
 
-  RobotModelLoader robot_model_loader_;
   std::shared_ptr<RobotModel> robot_model_;
   std::shared_ptr<RobotState> robot_state_;
 
@@ -99,9 +102,7 @@ private:
   std::unordered_map<std::string, TextureObject> texture_objects_;
 
   // Rendering lights
-  void LoadShaderLightUniforms(Program& shader);
-
-  std::vector<Light> lights_;
+  void LoadShaderLightUniforms(const std::vector<Light>& lights);
 };
 }
 

@@ -7,7 +7,8 @@
 #include <GLFW/glfw3.h>
 
 #include "occlusion/widget/image_viewer.h"
-#include "occlusion/widget/camera_viewer.h"
+#include "occlusion/widget/scene_viewer.h"
+#include "occlusion/scene/scene_edge.h"
 
 namespace occlusion
 {
@@ -51,9 +52,12 @@ Engine::Engine()
 
 Engine::~Engine()
 {
-  glDeleteVertexArrays(1, &point_cloud_vao_);
-  glDeleteBuffers(1, &point_cloud_vbo_);
-  glDeleteBuffers(1, &point_cloud_color_vbo_);
+}
+
+void Engine::UseShader(const std::string& name)
+{
+  shader_ = &shaders_[name];
+  shader_->Use();
 }
 
 void Engine::Run()
@@ -92,7 +96,7 @@ void Engine::Run()
 
   Resize(width_, height_);
 
-  glfwMaximizeWindow(window_);
+  //glfwMaximizeWindow(window_);
 
   // Rendering loop
   Initialize();
@@ -247,10 +251,10 @@ void Engine::MouseButton(int button, int action, int mods, float xpos, float ypo
 void Engine::Initialize()
 {
   // Widgets
-  widgets_.push_back(std::make_shared<CameraViewer>(this, 0, 0, width_ / 2, height_ / 2));
-  widgets_.push_back(std::make_shared<CameraViewer>(this, 0, height_ / 2, width_ / 2, (height_ + 1) / 2));
-  widgets_.push_back(std::make_shared<ImageViewer>(this, width_ / 2, 0, (width_ + 1) / 2, height_ / 2));
-  widgets_.push_back(std::make_shared<ImageViewer>(this, width_ / 2, height_ / 2, (width_ + 1) / 2, (height_ + 1) / 2));
+  widgets_.push_back(std::make_shared<SceneViewer>(this, 0, 0, width_ / 2, height_ / 2));
+  widgets_.push_back(std::make_shared<SceneViewer>(this, 0, height_ / 2, width_ / 2, (height_ + 1) / 2));
+  widgets_.push_back(std::make_shared<ImageViewer>(this, width_ / 2, 0, (width_ + 1) / 2, height_ / 4));
+  widgets_.push_back(std::make_shared<ImageViewer>(this, width_ / 2, height_ / 4, (width_ + 1) / 2, (height_ + 3) / 4));
 
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -262,7 +266,7 @@ void Engine::Initialize()
 
   // Camera
   camera_.SetPerspective();
-  camera_.SetAspect(static_cast<float>(width_ / 2) / height_);
+  camera_.SetAspect(static_cast<float>(width_) / height_);
   camera_.SetFovy(60.f / 3.1415926535897932384626433832795f * 2.f);
 
   /*
@@ -275,6 +279,14 @@ void Engine::Initialize()
   mouse_button_status_[1] = false;
   mouse_button_status_[2] = false;
 
+  // Scene
+  scene_ = std::make_shared<Scene>();
+
+  auto root = scene_->GetRoot();
+
+  auto camera_node = std::make_shared<SceneCamera>();
+  SceneEdge::Create(root, camera_node);
+
   // Light
   Light light;
   light.type = Light::Type::Directional;
@@ -282,19 +294,20 @@ void Engine::Initialize()
   light.ambient = Vector3f(0.2f, 0.2f, 0.2f);
   light.diffuse = Vector3f(0.2f, 0.2f, 0.2f);
   light.specular = Vector3f(0.2f, 0.2f, 0.2f);
-  lights_.push_back(light);
+
+  scene_->AddLight(light);
 
   light.position = Vector3f(-1.f, -1.f, 1.f);
-  lights_.push_back(light);
+  scene_->AddLight(light);
 
   light.position = Vector3f(-1.f, 1.f, 1.f);
-  lights_.push_back(light);
+  scene_->AddLight(light);
 
   light.position = Vector3f(1.f, -1.f, 1.f);
-  lights_.push_back(light);
+  scene_->AddLight(light);
 
   light.position = Vector3f(1.f, 1.f, 1.f);
-  lights_.push_back(light);
+  scene_->AddLight(light);
 
   // Dataset
   dataset_ = &wnp_;
@@ -302,33 +315,17 @@ void Engine::Initialize()
   dataset_->SelectSequence(0);
 
   // Point cloud vertex array
-  glGenVertexArrays(1, &point_cloud_vao_);
-  glBindVertexArray(point_cloud_vao_);
-
-  glGenBuffers(1, &point_cloud_vbo_);
-  glBindBuffer(GL_ARRAY_BUFFER, point_cloud_vbo_);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * dataset_->DepthWidth() * dataset_->DepthHeight() * 3, (void*)0, GL_DYNAMIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-  glEnableVertexAttribArray(0);
-
-  glGenBuffers(1, &point_cloud_color_vbo_);
-  glBindBuffer(GL_ARRAY_BUFFER, point_cloud_color_vbo_);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * dataset_->DepthWidth() * dataset_->DepthHeight() * 3, (void*)0, GL_DYNAMIC_DRAW);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-  glEnableVertexAttribArray(1);
-
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  point_cloud_object_ = std::make_shared<PointCloudObject>(dataset_->DepthWidth() * dataset_->DepthHeight());
 }
 
 void Engine::UseColorImageShader()
 {
-  shader_color_.Use();
+  UseShader("color");
 }
 
 void Engine::UseGrayImageShader()
 {
-  shader_depth_.Use();
+  UseShader("depth");
 }
 
 void Engine::UpdateColorDepthImages(const std::vector<unsigned char>& color, const std::vector<unsigned short>& depth)
@@ -340,28 +337,20 @@ void Engine::UpdateColorDepthImages(const std::vector<unsigned char>& color, con
   depth_viewer->SetGrayImage(dataset_->DepthWidth(), dataset_->DepthHeight(), depth, true);
 }
 
-void Engine::DrawPointCloud(const std::vector<float>& point_cloud, const std::vector<float>& point_cloud_color)
+void Engine::DrawPointCloud()
 {
-  shader_point_cloud_.Use();
+  UseShader("pointcloud");
 
   Affine3d model = robot_state_->GetLinkTransform("head_camera_rgb_optical_frame");
   model.rotate(Eigen::AngleAxisd(PI / 2., Vector3d(0., 1., 0.)));
   model.rotate(Eigen::AngleAxisd(-PI / 2., Vector3d(1., 0., 0.)));
 
-  shader_point_cloud_.UniformMatrix4f("projection", camera_.ProjectionMatrix());
-  shader_point_cloud_.UniformMatrix4f("view", camera_.ViewMatrix());
-  shader_point_cloud_.UniformMatrix4f("model", model.cast<float>().matrix());
-  shader_point_cloud_.Uniform4f("width_height_near_far", dataset_->DepthWidth(), dataset_->DepthHeight(), camera_.GetNear(), camera_.GetFar());
+  shader_->UniformMatrix4f("projection", camera_.ProjectionMatrix());
+  shader_->UniformMatrix4f("view", camera_.ViewMatrix());
+  shader_->UniformMatrix4f("model", model.cast<float>().matrix());
+  shader_->Uniform4f("width_height_near_far", dataset_->DepthWidth(), dataset_->DepthHeight(), camera_.GetNear(), camera_.GetFar());
 
-  glBindBuffer(GL_ARRAY_BUFFER, point_cloud_vbo_);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * point_cloud.size(), point_cloud.data());
-  glBindBuffer(GL_ARRAY_BUFFER, point_cloud_color_vbo_);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * point_cloud_color.size(), point_cloud_color.data());
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  glBindVertexArray(point_cloud_vao_);
-  glDrawArrays(GL_POINTS, 0, point_cloud.size() / 3);
-  glBindVertexArray(0);
+  point_cloud_object_->Draw();
 }
 
 void Engine::Draw()
@@ -383,10 +372,9 @@ void Engine::Draw()
 
   kinect_.FeedFrame(std::move(rgb_image), std::move(depth_image));
   kinect_.GeneratePointCloud();
-  const auto& point_cloud = kinect_.GetPointCloud();
-  const auto& point_cloud_color = kinect_.GetPointCloudColor();
+  point_cloud_object_->Update(kinect_.GetPointCloud());
 
-  DrawPointCloud(point_cloud, point_cloud_color);
+  DrawPointCloud();
 
   // Robot
   DrawRobot();
@@ -408,22 +396,22 @@ void Engine::ViewFromRobotCamera()
 
 void Engine::DrawRobot()
 {
-  shader_robot_.Use();
+  UseShader("robot");
 
-  LoadShaderLightUniforms(shader_robot_);
+  LoadShaderLightUniforms(scene_->GetLights());
 
   Matrix4f id = Matrix4f::Identity();
-  shader_robot_.UniformMatrix4f("projection", camera_.ProjectionMatrix());
-  shader_robot_.UniformMatrix4f("view", camera_.ViewMatrix());
-  shader_robot_.UniformMatrix4f("model", id);
+  shader_->UniformMatrix4f("projection", camera_.ProjectionMatrix());
+  shader_->UniformMatrix4f("view", camera_.ViewMatrix());
+  shader_->UniformMatrix4f("model", id);
 
-  shader_robot_.Uniform3f("eye_position", camera_.GetEye());
-  shader_robot_.Uniform1i("diffuse_texture", 0);
+  shader_->Uniform3f("eye_position", camera_.GetEye());
+  shader_->Uniform1i("diffuse_texture", 0);
 
-  shader_robot_.Uniform3f("material.ambient", Vector3f(0.2f, 0.2f, 0.2f));
-  shader_robot_.Uniform3f("material.diffuse", Vector3f(0.2f, 0.2f, 0.2f));
-  shader_robot_.Uniform3f("material.specular", Vector3f(1.0f, 1.0f, 1.0f));
-  shader_robot_.Uniform1f("material.shininess", 100.f);
+  shader_->Uniform3f("material.ambient", Vector3f(0.2f, 0.2f, 0.2f));
+  shader_->Uniform3f("material.diffuse", Vector3f(0.2f, 0.2f, 0.2f));
+  shader_->Uniform3f("material.specular", Vector3f(1.0f, 1.0f, 1.0f));
+  shader_->Uniform1f("material.shininess", 100.f);
 
   for (const auto& link_transform : robot_state_->GetLinkTransforms())
   {
@@ -437,69 +425,67 @@ void Engine::DrawRobot()
 
       if (mesh_object.HasDiffuseTexture())
       {
-        shader_robot_.Uniform1i("has_diffuse_texture", 1);
+        shader_->Uniform1i("has_diffuse_texture", 1);
         const auto& texture_filename = mesh_object.GetDiffuseTextureFilename();
         const auto& texture_object = texture_objects_.find(texture_filename)->second;
         glBindTexture(GL_TEXTURE_2D, texture_object.GetTextureId());
       }
       else
-        shader_robot_.Uniform1i("has_diffuse_texture", 0);
+        shader_->Uniform1i("has_diffuse_texture", 0);
 
-      shader_robot_.UniformMatrix4f("model", model.matrix());
+      shader_->UniformMatrix4f("model", model.matrix());
       mesh_object.Draw();
       glBindTexture(GL_TEXTURE_2D, 0);
     }
   }
 }
 
-void Engine::LoadShaderLightUniforms(Program& shader)
+void Engine::LoadShaderLightUniforms(const std::vector<Light>& lights)
 {
-  shader.Use();
-
-  for (int i = 0; i < lights_.size(); i++)
+  for (int i = 0; i < lights.size(); i++)
   {
-    const auto& light = lights_[i];
+    const auto& light = lights[i];
     std::string light_name = "lights[" + std::to_string(i) + "]";
 
-    shader.Uniform1i(light_name + ".use", 1);
+    shader_->Uniform1i(light_name + ".use", 1);
 
     switch (light.type)
     {
     case Light::Type::Directional:
-      shader.Uniform1i(light_name + ".type", 0);
+      shader_->Uniform1i(light_name + ".type", 0);
       break;
 
     case Light::Type::Point:
-      shader.Uniform1i(light_name + ".type", 1);
-      shader.Uniform3f(light_name + ".attenuation", light.attenuation);
+      shader_->Uniform1i(light_name + ".type", 1);
+      shader_->Uniform3f(light_name + ".attenuation", light.attenuation);
       break;
     }
 
-    shader.Uniform3f(light_name + ".position", light.position);
-    shader.Uniform3f(light_name + ".ambient", light.ambient);
-    shader.Uniform3f(light_name + ".diffuse", light.diffuse);
-    shader.Uniform3f(light_name + ".specular", light.specular);
+    shader_->Uniform3f(light_name + ".position", light.position);
+    shader_->Uniform3f(light_name + ".ambient", light.ambient);
+    shader_->Uniform3f(light_name + ".diffuse", light.diffuse);
+    shader_->Uniform3f(light_name + ".specular", light.specular);
   }
 
-  for (int i = lights_.size(); i < 8; i++)
-    shader.Uniform1i("lights[" + std::to_string(i) + "].use", 0);
+  for (int i = lights.size(); i < 8; i++)
+    shader_->Uniform1i("lights[" + std::to_string(i) + "].use", 0);
 }
 
 void Engine::LoadShaders()
 {
-  shader_color_ = Program("..\\src\\shader\\texture");
-  shader_depth_ = Program("..\\src\\shader\\depth");
-  shader_point_cloud_ = Program("..\\src\\shader\\pointcloud");
-  shader_robot_ = Program("..\\src\\shader\\robot");
+  shaders_.AddShader("color", "..\\src\\shader\\texture");
+  shaders_.AddShader("depth", "..\\src\\shader\\depth");
+  shaders_.AddShader("pointcloud", "..\\src\\shader\\pointcloud");
+  shaders_.AddShader("robot", "..\\src\\shader\\robot");
 }
 
 void Engine::LoadRobotModel()
 {
-  robot_model_loader_.SetPackageDirectory("..\\..\\fetch_ros");
-  robot_model_ = robot_model_loader_.Load("package://fetch_description\\robots\\fetch.urdf");
+  RobotModelLoader robot_model_loader;
+  robot_model_loader.SetPackageDirectory("..\\..\\fetch_ros");
+  robot_model_ = robot_model_loader.Load("package://fetch_description\\robots\\fetch.urdf");
 
   robot_state_ = std::make_shared<RobotState>(robot_model_);
-  robot_state_->ForwardKinematics();
 
   for (const auto& link_transform : robot_state_->GetLinkTransforms())
   {

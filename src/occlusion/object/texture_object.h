@@ -1,5 +1,5 @@
-#ifndef OCCLUSION_TEXTURE_OBJECT_H_
-#define OCCLUSION_TEXTURE_OBJECT_H_
+#ifndef OCCLUSION_OBJECT_TEXTURE_OBJECT_H_
+#define OCCLUSION_OBJECT_TEXTURE_OBJECT_H_
 
 #include "occlusion/texture.h"
 
@@ -31,6 +31,8 @@ public:
     texture_ = std::move(rhs.texture_);
 
     rhs.id_ = 0;
+
+    return *this;
   }
 
   void Load(const std::string& filename);
@@ -52,4 +54,4 @@ private:
 };
 }
 
-#endif // OCCLUSION_TEXTURE_OBJECT_H_
+#endif // OCCLUSION_OBJECT_TEXTURE_OBJECT_H_

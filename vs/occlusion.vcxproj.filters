@@ -28,6 +28,18 @@
     <Filter Include="src\widget">
       <UniqueIdentifier>{0d41bf4b-84e5-4005-87cc-a77b15e925da}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\data">
+      <UniqueIdentifier>{3f9a3587-b552-49dd-8176-ba2b69a9164b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\object">
+      <UniqueIdentifier>{04efd901-5bf9-4fb1-874c-e04a8438c579}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\scene">
+      <UniqueIdentifier>{1000c641-cf09-4973-b23d-a4153bd3875b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\shader">
+      <UniqueIdentifier>{c2be0401-56d0-415b-bff6-533ab1c9cb86}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\occlusion\main.cc">
@@ -37,12 +49,6 @@
       <Filter>lib\glad</Filter>
     </ClCompile>
     <ClCompile Include="..\src\occlusion\engine.cc">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\occlusion\program.cc">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\occlusion\shader.cc">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\occlusion\texture.cc">
@@ -78,13 +84,7 @@
     <ClCompile Include="..\src\occlusion\robot_joint.cc">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\occlusion\mesh_object.cc">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\occlusion\robot_state.cc">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\occlusion\texture_object.cc">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\occlusion\widget\widget.cc">
@@ -93,8 +93,50 @@
     <ClCompile Include="..\src\occlusion\widget\image_viewer.cc">
       <Filter>src\widget</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\occlusion\widget\camera_viewer.cc">
+    <ClCompile Include="..\src\occlusion\data\image.cc">
+      <Filter>src\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\data\point_cloud.cc">
+      <Filter>src\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\object\mesh_object.cc">
+      <Filter>src\object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\object\texture_object.cc">
+      <Filter>src\object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\widget\scene_viewer.cc">
       <Filter>src\widget</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\object\point_cloud_object.cc">
+      <Filter>src\object</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\scene\scene.cc">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\scene\scene_edge.cc">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\scene\scene_node.cc">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\scene\scene_mesh.cc">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\scene\scene_point_cloud.cc">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\scene\scene_camera.cc">
+      <Filter>src\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\shader\program.cc">
+      <Filter>src\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\shader\shader.cc">
+      <Filter>src\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\occlusion\shader\shaders.cc">
+      <Filter>src\shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -102,12 +144,6 @@
       <Filter>lib\glad</Filter>
     </ClInclude>
     <ClInclude Include="..\src\occlusion\engine.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\occlusion\program.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\occlusion\shader.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\occlusion\texture.h">
@@ -149,16 +185,7 @@
     <ClInclude Include="..\src\occlusion\robot_joint.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\occlusion\light.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\occlusion\mesh_object.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\occlusion\robot_state.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\occlusion\texture_object.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\src\occlusion\widget\widget.h">
@@ -167,8 +194,53 @@
     <ClInclude Include="..\src\occlusion\widget\image_viewer.h">
       <Filter>src\widget</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\occlusion\widget\camera_viewer.h">
+    <ClInclude Include="..\src\occlusion\data\image.h">
+      <Filter>src\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\data\point_cloud.h">
+      <Filter>src\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\object\mesh_object.h">
+      <Filter>src\object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\object\texture_object.h">
+      <Filter>src\object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\widget\scene_viewer.h">
       <Filter>src\widget</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\object\point_cloud_object.h">
+      <Filter>src\object</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\scene\scene.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\scene\scene_edge.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\scene\scene_node.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\scene\scene_mesh.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\scene\scene_point_cloud.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\data\light.h">
+      <Filter>src\data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\scene\scene_camera.h">
+      <Filter>src\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\shader\program.h">
+      <Filter>src\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\shader\shader.h">
+      <Filter>src\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\occlusion\shader\shaders.h">
+      <Filter>src\shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

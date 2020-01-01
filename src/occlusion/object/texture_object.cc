@@ -1,4 +1,4 @@
-#include "occlusion/texture_object.h"
+#include "occlusion/object/texture_object.h"
 
 #include <iostream>
 

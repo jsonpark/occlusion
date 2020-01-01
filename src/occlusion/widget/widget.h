@@ -12,7 +12,7 @@ public:
   Widget(Engine* engine, int x, int y, int width, int height);
   virtual ~Widget();
 
-  bool IsShown()
+  bool IsShown() const noexcept
   {
     return show_;
   }
@@ -25,6 +25,16 @@ public:
   void Show()
   {
     show_ = true;
+  }
+
+  auto Width() const noexcept
+  {
+    return width_;
+  }
+
+  auto Height() const noexcept
+  {
+    return height_;
   }
 
   void Resize(int x, int y, int width, int height);

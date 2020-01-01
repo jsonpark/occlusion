@@ -60,25 +60,31 @@ void ImageViewer::InitializeTexture(ImageType type, int width, int height, bool 
   image_height_ = height;
 
   float aspect = static_cast<float>(width) / height;
+  float screen_aspect = static_cast<float>(Widget::Width()) / Widget::Height();
 
   float buffer1[] =
   {
-    -aspect, -1.f, 0.f, 0.f,
-    aspect, -1.f, 1.f, 0.f,
-    aspect, 1.f, 1.f, 1.f,
-    -aspect, 1.f, 0.f, 1.f,
+    -aspect / screen_aspect, -1.f, 0.f, 0.f,
+    aspect / screen_aspect, -1.f, 1.f, 0.f,
+    aspect / screen_aspect, 1.f, 1.f, 1.f,
+    -aspect / screen_aspect, 1.f, 0.f, 1.f,
   };
 
   float buffer2[] =
   {
-    -1.f, -1.f / aspect, 0.f, 0.f,
-    1.f, -1.f / aspect, 1.f, 0.f,
-    1.f, 1.f / aspect, 1.f, 1.f,
-    -1.f, 1.f / aspect, 0.f, 1.f,
+    -1.f, -screen_aspect / aspect, 0.f, 0.f,
+    1.f, -screen_aspect / aspect, 1.f, 0.f,
+    1.f, screen_aspect / aspect, 1.f, 1.f,
+    -1.f, screen_aspect / aspect, 0.f, 1.f,
   };
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 16, buffer2);
+
+  if (aspect <= screen_aspect)
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 16, buffer1);
+  else
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 16, buffer2);
+
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   if (texture_ != 0)

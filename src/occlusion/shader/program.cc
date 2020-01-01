@@ -1,4 +1,4 @@
-#include "occlusion/program.h"
+#include "occlusion/shader/program.h"
 
 #include <iostream>
 
@@ -141,6 +141,11 @@ void Program::Uniform2f(const std::string& name, float v0, float v1)
 void Program::Uniform3f(const std::string& name, const Vector3f& v)
 {
   glUniform3fv(glGetUniformLocation(id_, name.c_str()), 1, v.data());
+}
+
+void Program::Uniform3f(const std::string& name, float v0, float v1, float v2)
+{
+  glUniform3f(glGetUniformLocation(id_, name.c_str()), v0, v1, v2);
 }
 
 void Program::Uniform4f(const std::string& name, float v0, float v1, float v2, float v3)
